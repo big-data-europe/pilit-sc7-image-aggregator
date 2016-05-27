@@ -1,3 +1,5 @@
+package eu.bde.sc4pilot.imageaggregator;
+
 
 import eu.bde.sc4pilot.imageaggregator.DataClient;
 import eu.bde.sc4pilot.imageaggregator.Image;
