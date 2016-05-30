@@ -1,4 +1,4 @@
-package eu.bde.sc4pilot.imageaggregator;
+package eu.bde.sc7pilot.imageaggregator;
 
 import java.util.List;
 import java.util.logging.Level;

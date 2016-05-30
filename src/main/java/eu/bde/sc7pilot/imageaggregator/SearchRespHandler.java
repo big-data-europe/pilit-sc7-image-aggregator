@@ -1,4 +1,4 @@
-package eu.bde.sc4pilot.imageaggregator;
+package eu.bde.sc7pilot.imageaggregator;
 
 import java.net.MalformedURLException;
 import java.net.URL;
