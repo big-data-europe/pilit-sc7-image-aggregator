@@ -12,7 +12,8 @@ public class QueryBuilder {
     private String polarisationMode;
     private String platformName;
     private String orbit;
-    private String beginPosition;
+    private String fromBeginPosition;
+    private String toBeginPosition;
 
     public QueryBuilder() {
     }
@@ -42,13 +43,16 @@ public class QueryBuilder {
         return this;
     }
 
-    public QueryBuilder setBeginPosition(String beginPosition) {
-        this.beginPosition = beginPosition;
+    public QueryBuilder setFromBeginPosition(String fromBeginPosition) {
+        this.fromBeginPosition = fromBeginPosition;
         return this;
     }
-
+    public QueryBuilder setToBeginPosition(String toBeginPosition) {
+        this.toBeginPosition = toBeginPosition;
+        return this;
+    }
     public Query createQuery() {
-        return new Query(footPrint, productType, polarisationMode, platformName, orbit, beginPosition);
+        return new Query(footPrint, productType, polarisationMode, platformName, orbit, fromBeginPosition,toBeginPosition);
     }
 
 }

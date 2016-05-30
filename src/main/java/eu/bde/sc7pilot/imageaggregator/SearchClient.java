@@ -1,8 +1,7 @@
 package eu.bde.sc7pilot.imageaggregator;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.ws.rs.NotAuthorizedException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import org.apache.http.HttpResponse;
@@ -14,6 +13,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
+import model.Image;
 
 /**
  *
@@ -22,7 +22,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 public class SearchClient {
 
-    private static final Logger LOGGER = Logger.getLogger(SearchClient.class.getName());
     private final static String URL = "https://scihub.copernicus.eu/apihub/search";
     private final static String PARAMETER_QUERY = "q";
     private final static String PARAMETER_ROWS = "rows";
@@ -43,11 +42,12 @@ public class SearchClient {
             builder.setParameter(PARAMETER_QUERY, query);
             builder.setParameter(PARAMETER_ROWS, String.valueOf(endIndex));
             builder.setParameter(PARAMETER_START, String.valueOf(startIndex));
+            System.out.println(builder.build());
             HttpGet request = new HttpGet(builder.build());
             
             return httpClient.execute(request);
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
             return null;
         }
     }
@@ -66,8 +66,8 @@ public class SearchClient {
             SAXParser parser = factory.newSAXParser();
             handler = new SearchRespHandler();
             parser.parse(response.getEntity().getContent(), handler);
-        } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
         
@@ -76,6 +76,8 @@ public class SearchClient {
      
     public List<Image> search(String query, int startIndex, int endIndex) {
         HttpResponse response = getResponse(query, startIndex, endIndex);
+        if(response.getStatusLine().getStatusCode()==401)
+        	throw new NotAuthorizedException(response);
         return parseResponse(response);
     }
 }

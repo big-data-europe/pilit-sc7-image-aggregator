@@ -4,6 +4,7 @@ package eu.bde.sc7pilot.imageaggregator;
  *
  * @author efi
  */
+
 public class Query {
 
     private String footPrint;
@@ -11,15 +12,17 @@ public class Query {
     private String polarisationMode;
     private String platformName;
     private String orbit;
-    private String beginPosition;
+    private String fromBeginPosition;
+    private String toBeginPosition;
 
-    public Query(String footPrint, String productType, String polarisationMode, String platformName, String orbit, String beginPosition) {
+    public Query(String footPrint, String productType, String polarisationMode, String platformName, String orbit, String fromBeginPosition, String toBeginPosition) {
         this.footPrint = footPrint;
         this.productType = productType;
         this.polarisationMode = polarisationMode;
         this.platformName = platformName;
         this.orbit = orbit;
-        this.beginPosition = beginPosition;
+        this.fromBeginPosition = fromBeginPosition;
+        this.toBeginPosition = toBeginPosition;
     }
 
     /**
@@ -117,17 +120,31 @@ public class Query {
             query += (!first ? " AND " : "") + " ( footprint:" + '"' + footPrint + '"' + " )";
             first = false;
         }
-        if (beginPosition != null) {
-            query += (!first ? " AND " : "") + " beginPosition:[" + beginPosition + "] ";
+        if (fromBeginPosition != null) {
+            query += (!first ? " AND " : "") + " beginPosition:[" + fromBeginPosition + " TO " + toBeginPosition + "]";
+            //query += (!first?" AND ":"")+" beginPosition:"+"[2016-03-01T07:21:20.892Z TO 2016-03-01T07:21:20.892Z]";
             first = false;
         }
+        System.out.println(query);
         return query; //To change body of generated methods, choose Tools | Templates.
     }
 
     /**
      * @return the beginPosition
      */
-    public String getBeginPosition() {
-        return beginPosition;
+    public String getFromBeginPosition() {
+        return fromBeginPosition;
+    }
+
+    public String getToBeginPosition() {
+        return toBeginPosition;
+    }
+
+    public void setToBeginPosition(String toBeginPosition) {
+        this.toBeginPosition = toBeginPosition;
+    }
+
+    public void setFromBeginPosition(String fromBeginPosition) {
+        this.fromBeginPosition = fromBeginPosition;
     }
 }
