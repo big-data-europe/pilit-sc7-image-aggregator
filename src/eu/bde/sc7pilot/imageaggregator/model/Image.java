@@ -1,4 +1,4 @@
-package model;
+package eu.bde.sc7pilot.imageaggregator.model;
 
 import java.net.URL;
 import org.joda.time.DateTime;

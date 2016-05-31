@@ -10,7 +10,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import model.Image;
+import eu.bde.sc7pilot.imageaggregator.model.Image;
 
 public class SearchRespHandler extends DefaultHandler {
 

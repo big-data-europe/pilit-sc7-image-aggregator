@@ -13,7 +13,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
-import model.Image;
+
+import eu.bde.sc7pilot.imageaggregator.model.Image;
 
 /**
  *

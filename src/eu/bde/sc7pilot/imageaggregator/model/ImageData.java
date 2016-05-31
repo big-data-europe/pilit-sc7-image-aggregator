@@ -1,4 +1,4 @@
-package model;
+package eu.bde.sc7pilot.imageaggregator.model;
 
 import org.joda.time.DateTime;
 import com.fasterxml.jackson.annotation.JsonFormat;
