@@ -18,16 +18,18 @@ public class DownloadService {
 		this.password=password;
 	}
     public void downloadImages(List<Image> images, String outputDirectory) {
+    	System.out.println("images to download: "+images.size());
         DataClient imageService = new DataClient(username, password);
         for (Image image : images) {
             String imageName = image.getName();
             try {
                 imageService.downloadAndSaveById(image.getId(), outputDirectory + imageName + ".zip");
+                System.out.println("All images have been saved.");
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-        System.out.println("All images have been saved.");
+       
     }
 }

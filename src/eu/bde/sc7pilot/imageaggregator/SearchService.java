@@ -17,7 +17,7 @@ import eu.bde.sc7pilot.imageaggregator.model.ImageData;
 
 public class SearchService {
 
-    private final static int MAX_NO_OF_IMAGES = 40;
+    private final static int MAX_NO_OF_IMAGES = 2;
     private String username;
     private String password;
 

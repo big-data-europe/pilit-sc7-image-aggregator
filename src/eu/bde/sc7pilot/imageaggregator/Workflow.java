@@ -15,7 +15,7 @@ import rx.subjects.ReplaySubject;
 public class Workflow {
 public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 	 try {
-			String outputDirectory="/home/efi/SNAP/rdfs/";
+			String outputDirectory="/images/";
 			
 			SearchService searchService=new SearchService(imageData.getUsername(),imageData.getPassword());
 			DownloadService downloadService=new DownloadService(imageData.getUsername(),imageData.getPassword());
@@ -29,7 +29,7 @@ public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 				return "ok";
 			}
 			subject.onNext("Downloading images...");
-			//downloadService.downloadImages(images, outputDirectory);
+			downloadService.downloadImages(images, outputDirectory);
 			
 			//storageWorkflow.storeChanges(changes);
 			subject.onNext("Change detection completed successfully.");
