@@ -1,5 +1,6 @@
 package eu.bde.sc7pilot.imageaggregator;
 
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -15,8 +16,13 @@ import rx.subjects.ReplaySubject;
 public class Workflow {
 public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 	 try {
-			String outputDirectory="/images/";
-			
+			String outputDirectory=System.getProperty("user.home")+"/images/";
+			File dir=new File(outputDirectory);
+					if(!dir.exists()){
+						dir.mkdir();
+					}
+						
+			System.out.println(dir.getPath());
 			SearchService searchService=new SearchService(imageData.getUsername(),imageData.getPassword());
 			DownloadService downloadService=new DownloadService(imageData.getUsername(),imageData.getPassword());
 			subject.onNext("Searching for images...");
@@ -30,7 +36,8 @@ public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 			}
 			subject.onNext("Downloading images...");
 			downloadService.downloadImages(images, outputDirectory);
-			
+			RunChangeDetector ch=new RunChangeDetector("test.sh");
+			ch.runchangeDetector();
 			//storageWorkflow.storeChanges(changes);
 			subject.onNext("Change detection completed successfully.");
 			subject.onCompleted();

@@ -20,11 +20,12 @@ public class DownloadService {
     public void downloadImages(List<Image> images, String outputDirectory) {
     	System.out.println("images to download: "+images.size());
         DataClient imageService = new DataClient(username, password);
-        for (Image image : images) {
+        for (int i=0;i<images.size();i++) {
+        	Image image=images.get(i);
             String imageName = image.getName();
             try {
                 imageService.downloadAndSaveById(image.getId(), outputDirectory + imageName + ".zip");
-                System.out.println("All images have been saved.");
+                System.out.println("Image "+i+" was saved successfully");
             } catch (Exception e) {
                 e.printStackTrace();
             }
