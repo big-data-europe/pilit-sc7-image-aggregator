@@ -1,6 +1,5 @@
 package eu.bde.sc7pilot.imageaggregator;
 
-import java.io.File;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -16,13 +15,12 @@ import rx.subjects.ReplaySubject;
 public class Workflow {
 public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 	 try {
-			String outputDirectory=System.getProperty("user.home")+"/images/";
-			File dir=new File(outputDirectory);
-					if(!dir.exists()){
-						dir.mkdir();
-					}
-						
-			System.out.println(dir.getPath());
+//			String outputDirectory=System.getProperty("user.home")+"/images/";
+//			File dir=new File(outputDirectory);
+//					if(!dir.exists()){
+//						dir.mkdir();
+//					}
+		 	String outputDirectory="/images/";		
 			SearchService searchService=new SearchService(imageData.getUsername(),imageData.getPassword());
 			DownloadService downloadService=new DownloadService(imageData.getUsername(),imageData.getPassword());
 			subject.onNext("Searching for images...");
@@ -36,9 +34,15 @@ public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 			}
 			subject.onNext("Downloading images...");
 			downloadService.downloadImages(images, outputDirectory);
-			RunChangeDetector ch=new RunChangeDetector("test.sh");
-			ch.runchangeDetector();
-			//storageWorkflow.storeChanges(changes);
+			
+			//uncomment the next block to perform change detection
+			///subject.onNext("performing change detection...");
+			//RunChangeDetector ch=new RunChangeDetector("test.sh");
+			//String result=ch.runchangeDetector();
+			
+			//uncomment the next line to see the output of the shell script
+			//subject.onNext(result.substring(0, 20));
+			
 			subject.onNext("Change detection completed successfully.");
 			subject.onCompleted();
 			return "ok";

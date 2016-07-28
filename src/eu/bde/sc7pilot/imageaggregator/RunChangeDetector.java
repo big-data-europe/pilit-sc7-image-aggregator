@@ -16,7 +16,7 @@ public class RunChangeDetector {
 		this.scriptPath = scriptPath;
 	}
 
-	public void  runchangeDetector()throws IOException {
+	public String  runchangeDetector()throws IOException {
 		ProcessBuilder pb = new ProcessBuilder(scriptPath, "myArg1", "myArg2");
 		pb.redirectErrorStream(true);
 		
@@ -38,5 +38,6 @@ public class RunChangeDetector {
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(p.getInputStream(), writer, "UTF-8");
 		System.out.println( writer.toString());
+		return writer.toString();
 	}
 }
