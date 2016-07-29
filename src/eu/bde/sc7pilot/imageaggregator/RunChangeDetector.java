@@ -8,10 +8,10 @@ import org.apache.commons.io.IOUtils;
 public class RunChangeDetector {
 	private String scriptPath;
 	
-	public static void main(String[] args) throws IOException {
-		RunChangeDetector ch=new RunChangeDetector("test.sh");
-		ch.runchangeDetector();
-	}
+	//public static void main(String[] args) throws IOException {
+	//	RunChangeDetector ch=new RunChangeDetector("test.sh");
+	//	ch.runchangeDetector();
+	//}
 	public RunChangeDetector(String scriptPath) {
 		this.scriptPath = scriptPath;
 	}
