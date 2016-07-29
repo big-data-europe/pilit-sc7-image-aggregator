@@ -37,7 +37,7 @@ public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 			
 			//uncomment the next block to perform change detection
 			subject.onNext("performing change detection...");
-			RunChangeDetector ch=new RunChangeDetector("runchangedet.sh");
+			RunChangeDetector ch=new RunChangeDetector("/runchangedet.sh");
 			String result=ch.runchangeDetector();
 			
 			//uncomment the next line to see the output of the shell script
