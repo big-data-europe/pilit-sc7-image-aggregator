@@ -36,9 +36,9 @@ public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 			downloadService.downloadImages(images, outputDirectory);
 			
 			//uncomment the next block to perform change detection
-			///subject.onNext("performing change detection...");
-			//RunChangeDetector ch=new RunChangeDetector("test.sh");
-			//String result=ch.runchangeDetector();
+			subject.onNext("performing change detection...");
+			RunChangeDetector ch=new RunChangeDetector("runchangedet.sh");
+			String result=ch.runchangeDetector();
 			
 			//uncomment the next line to see the output of the shell script
 			//subject.onNext(result.substring(0, 20));
