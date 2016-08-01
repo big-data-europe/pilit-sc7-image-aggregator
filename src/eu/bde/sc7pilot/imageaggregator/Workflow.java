@@ -36,8 +36,8 @@ public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 			downloadService.downloadImages(images, outputDirectory);
 			
 			//Getting the local filepath's of the downloaded images
-			String img1 = outputDirectory + images.get(0).getName();
-			String img2 = outputDirectory + images.get(1).getName();
+			String img1 = outputDirectory + images.get(0).getName() + ".zip";
+			String img2 = outputDirectory + images.get(1).getName() + ".zip";
 			System.out.println("The first img's filepath is:" + img1);
 			System.out.println("The second img's filepath is:" + img2);
 			
