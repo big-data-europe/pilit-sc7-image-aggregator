@@ -7,6 +7,8 @@ import org.apache.commons.io.IOUtils;
 
 public class RunChangeDetector {
 	private String scriptPath;
+	private String img1;
+	private String img2;
 	
 	//public static void main(String[] args) throws IOException {
 	//	RunChangeDetector ch=new RunChangeDetector("test.sh");
@@ -14,10 +16,12 @@ public class RunChangeDetector {
 	//}
 	public RunChangeDetector(String scriptPath) {
 		this.scriptPath = scriptPath;
+		this.img1 = img1;
+		this.img2 = img2;
 	}
 
 	public String  runchangeDetector()throws IOException {
-		ProcessBuilder pb = new ProcessBuilder(scriptPath, "myArg1", "myArg2");
+		ProcessBuilder pb = new ProcessBuilder(scriptPath, img1, img2);
 		pb.redirectErrorStream(true);
 		
 		//Returns a string map view of this process builder's environment. Whenever a process builder is created, \
