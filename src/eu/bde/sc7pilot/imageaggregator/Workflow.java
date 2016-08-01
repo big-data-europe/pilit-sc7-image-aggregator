@@ -35,9 +35,15 @@ public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 			subject.onNext("Downloading images...");
 			downloadService.downloadImages(images, outputDirectory);
 			
+			//Getting the local filepath's of the downloaded images
+			String img1 = outputDirectory + images.get(0).getName();
+			String img2 = outputDirectory + images.get(1).getName();
+			System.out.println("The first img's filepath is:" + img1);
+			System.out.println("The second img's filepath is:" + img2);
+			
 			//uncomment the next block to perform change detection
 			subject.onNext("performing change detection...");
-			RunChangeDetector ch=new RunChangeDetector("/runchangedet.sh");
+			RunChangeDetector ch=new RunChangeDetector("/runchangedet.sh", img1, img2);
 			String result=ch.runchangeDetector();
 			
 			//uncomment the next line to see the output of the shell script
