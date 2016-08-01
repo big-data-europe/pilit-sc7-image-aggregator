@@ -14,7 +14,7 @@ public class RunChangeDetector {
 	//	RunChangeDetector ch=new RunChangeDetector("test.sh");
 	//	ch.runchangeDetector();
 	//}
-	public RunChangeDetector(String scriptPath) {
+	public RunChangeDetector(String scriptPath, String img1, String img2) {
 		this.scriptPath = scriptPath;
 		this.img1 = img1;
 		this.img2 = img2;
