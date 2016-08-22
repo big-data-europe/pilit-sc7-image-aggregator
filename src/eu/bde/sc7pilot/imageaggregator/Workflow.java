@@ -7,8 +7,12 @@ import java.util.concurrent.Executors;
 
 import javax.ws.rs.NotAuthorizedException;
 
+import eu.bde.sc7pilot.imageaggregator.changeDetection.ChangeDetection;
+import eu.bde.sc7pilot.imageaggregator.changeDetection.RandomTestDetection;
+import eu.bde.sc7pilot.imageaggregator.model.Change;
 import eu.bde.sc7pilot.imageaggregator.model.Image;
 import eu.bde.sc7pilot.imageaggregator.model.ImageData;
+import eu.bde.sc7pilot.imageaggregator.utils.GeotriplesClient;
 import rx.Observable;
 import rx.subjects.ReplaySubject;
 
@@ -43,9 +47,12 @@ public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 			
 			//uncomment the next block to perform change detection
 			subject.onNext("performing change detection...");
-			RunChangeDetector ch=new RunChangeDetector("/runchangedet.sh", img1, img2);
-			String result=ch.runchangeDetector();
-			
+			//RunChangeDetector ch=new RunChangeDetector("/runchangedet.sh", img1, img2);
+			//String result=ch.runchangeDetector();
+			ChangeDetection changeDetection=new RandomTestDetection();
+			List<Change> changes=changeDetection.detectChanges(images, imageData);
+			GeotriplesClient client=new GeotriplesClient("http://10.0.10.12","8192");
+			client.saveChanges(changes);
 			//uncomment the next line to see the output of the shell script
 			//subject.onNext(result.substring(0, 20));
 			

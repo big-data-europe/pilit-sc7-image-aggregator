@@ -1,4 +1,4 @@
-package eu.bde.sc7pilot.imageaggregator;
+package eu.bde.sc7pilot.imageaggregator.changeDetection;
 
 import java.io.IOException;
 import java.io.StringWriter;
