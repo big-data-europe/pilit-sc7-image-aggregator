@@ -51,7 +51,7 @@ public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 			//String result=ch.runchangeDetector();
 			ChangeDetection changeDetection=new RandomTestDetection();
 			List<Change> changes=changeDetection.detectChanges(images, imageData);
-			GeotriplesClient client=new GeotriplesClient("geotriples.bde_net","8080");
+			GeotriplesClient client=new GeotriplesClient("geotriples","8080");
 			client.saveChanges(changes);
 			//uncomment the next line to see the output of the shell script
 			//subject.onNext(result.substring(0, 20));
