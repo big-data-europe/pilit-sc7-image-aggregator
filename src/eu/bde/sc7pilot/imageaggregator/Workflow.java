@@ -47,8 +47,8 @@ public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 			
 			//uncomment the next block to perform change detection
 			subject.onNext("performing change detection...");
-			//RunChangeDetector ch=new RunChangeDetector("/runchangedet.sh", img1, img2);
-			//String result=ch.runchangeDetector();
+			RunChangeDetector ch=new RunChangeDetector("/runchangedet.sh", img1, img2);
+			String result=ch.runchangeDetector();
 			ChangeDetection changeDetection=new RandomTestDetection();
 			List<Change> changes=changeDetection.detectChanges(images, imageData);
 			GeotriplesClient client=new GeotriplesClient("http://geotriples","8080");
