@@ -9,6 +9,7 @@ import javax.ws.rs.NotAuthorizedException;
 
 import eu.bde.sc7pilot.imageaggregator.changeDetection.ChangeDetection;
 import eu.bde.sc7pilot.imageaggregator.changeDetection.RandomTestDetection;
+import eu.bde.sc7pilot.imageaggregator.changeDetection.RunChangeDetector;
 import eu.bde.sc7pilot.imageaggregator.model.Change;
 import eu.bde.sc7pilot.imageaggregator.model.Image;
 import eu.bde.sc7pilot.imageaggregator.model.ImageData;
