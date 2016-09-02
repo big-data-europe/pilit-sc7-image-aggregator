@@ -40,18 +40,18 @@ public class GeotriplesClient {
 		objectMapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false));
 		try {
 			String res=objectMapper.writeValueAsString(changes);
-			System.out.println(res);
+			System.out.println("changes are sending to geotriples:"+res);
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		URI uri = UriBuilder.fromUri(host+":"+port+"/geotriples/changes").build();
-		System.out.println(uri.toString());
+		System.out.println("geotriples url is:"+ uri.toString());
 		WebTarget target = client.target(uri);
 		Invocation.Builder invocationBuilder =
 				target.request(MediaType.APPLICATION_JSON);
 		Response response = invocationBuilder.post(Entity.entity(changes,MediaType.APPLICATION_JSON),
 				Response.class);
-		System.out.println(response.getStatus()+" "+response.readEntity(String.class));
+		System.out.println("geotriples response: "+response.getStatus()+" "+response.readEntity(String.class));
 	}
 }

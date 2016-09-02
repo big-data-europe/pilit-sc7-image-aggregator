@@ -7,6 +7,11 @@ import java.util.concurrent.Executors;
 
 import javax.ws.rs.NotAuthorizedException;
 
+import com.bedatadriven.jackson.datatype.jts.JtsModule;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
+
 import eu.bde.sc7pilot.imageaggregator.changeDetection.ChangeDetection;
 import eu.bde.sc7pilot.imageaggregator.changeDetection.RandomTestDetection;
 import eu.bde.sc7pilot.imageaggregator.changeDetection.RunChangeDetector;
@@ -14,6 +19,7 @@ import eu.bde.sc7pilot.imageaggregator.model.Change;
 import eu.bde.sc7pilot.imageaggregator.model.Image;
 import eu.bde.sc7pilot.imageaggregator.model.ImageData;
 import eu.bde.sc7pilot.imageaggregator.utils.GeotriplesClient;
+import eu.bde.sc7pilot.imageaggregator.utils.Views;
 import rx.Observable;
 import rx.subjects.ReplaySubject;
 
@@ -58,6 +64,15 @@ public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 			//subject.onNext(result.substring(0, 20));
 			
 			subject.onNext("Change detection completed successfully.");
+			ObjectMapper objectMapper=new ObjectMapper();
+			objectMapper.registerModule(new JodaModule());
+			objectMapper.registerModule(new JtsModule());
+			
+			objectMapper.setConfig(objectMapper.getSerializationConfig().withView(Views.Public.class));
+			objectMapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false));
+			String res=objectMapper.writerWithView(Views.Public.class).writeValueAsString(changes);
+			subject.onNext(res);
+			
 			subject.onCompleted();
 			return "ok";
 		 }catch (NotAuthorizedException e) {
