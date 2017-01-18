@@ -48,8 +48,8 @@ public class Workflow {
 //			String img1 = outputDirectory + images.get(0).getName() + ".zip";
 //			String img2 = outputDirectory + images.get(1).getName() + ".zip";
 			subject.onNext("Already downloaded...");
-			String img1 = "S1A_IW_GRDH_1SDV_20170105T162336_20170105T162401_014699_017EA8_6FBA.zip";
-			String img2 = "S1B_IW_GRDH_1SDV_20170105T043023_20170105T043048_003708_0065EB_4107.zip";
+			String img1 = "S1A_IW_GRDH_1SSV_20160601T135202_20160601T135227_011518_011929_0EE2.zip";
+			String img2 = "S1A_IW_GRDH_1SSV_20160905T135207_20160905T135232_012918_0146C0_ECCC.zip";
 			System.out.println("The first img's filepath is:" + outputDirectory + img1);
 			System.out.println("The second img's filepath is:" + outputDirectory + img2);
 			
@@ -57,8 +57,8 @@ public class Workflow {
 			subject.onNext("Performing subseting...");
 //		    String img1name = images.get(0).getName();
 //		    String img2name = images.get(1).getName();
-		    String img1name = "S1A_IW_GRDH_1SDV_20170105T162336_20170105T162401_014699_017EA8_6FBA";
-		    String img2name = "S1B_IW_GRDH_1SDV_20170105T043023_20170105T043048_003708_0065EB_4107";
+		    String img1name = "S1A_IW_GRDH_1SSV_20160601T135202_20160601T135227_011518_011929_0EE2";
+		    String img2name = "S1A_IW_GRDH_1SSV_20160905T135207_20160905T135232_012918_0146C0_ECCC";
 			String polygonFixed = imageData.getArea().toString(); //.replace("(", "\\(");
 			//polygonFixed = polygonFixed.replace(")", "\\)");
 			System.out.println("polygonFixed "+polygonFixed);
@@ -78,6 +78,8 @@ public class Workflow {
 			//Run change detection
 			RunChangeDetector runCD = new RunChangeDetector("/runchangedet.sh", sub1dim, sub1tif, sub2dim, sub2tif);
 	        String resultCD = runCD.runchangeDetector();
+			//uncomment the next line to see the output of the shell script
+			//subject.onNext(result.substring(0, 20));
 
 			//Preparing DBScaning
 	        subject.onNext("performing DBScan...");
@@ -93,10 +95,6 @@ public class Workflow {
 			GeotriplesClient client = new GeotriplesClient("http://geotriples","8080");
 			client.saveChanges(changes);
 			
-			//uncomment the next line to see the output of the shell script
-			//subject.onNext(result.substring(0, 20));
-			
-			//subject.onNext("Change detection completed successfully.");
 			ObjectMapper objectMapper=new ObjectMapper();
 			objectMapper.registerModule(new JodaModule());
 			objectMapper.registerModule(new JtsModule());
