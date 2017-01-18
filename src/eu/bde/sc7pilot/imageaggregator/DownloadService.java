@@ -27,7 +27,7 @@ public class DownloadService {
             	long startDownl = System.currentTimeMillis();
                 imageService.downloadAndSaveById(image.getId(), outputDirectory + imageName + ".zip");
                 long endDownl = System.currentTimeMillis();
-                long downlTime = (endDownl - startDownl)/60000;
+                double downlTime = (endDownl - startDownl)/60000;
                 System.out.println(downlTime + " mins for Downloading and saving Image No.: "+i);
             } catch (Exception e) {
                 e.printStackTrace();

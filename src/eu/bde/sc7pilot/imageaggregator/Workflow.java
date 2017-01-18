@@ -30,8 +30,8 @@ public class Workflow {
 	public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 		try {
 			String outputDirectory = "/snap/";		
-			SearchService searchService=new SearchService(imageData.getUsername(),imageData.getPassword());
-			DownloadService downloadService=new DownloadService(imageData.getUsername(),imageData.getPassword());
+			SearchService searchService = new SearchService(imageData.getUsername(),imageData.getPassword());
+			DownloadService downloadService = new DownloadService(imageData.getUsername(),imageData.getPassword());
 			subject.onNext("Searching for images...");
 			List<Image> images=searchService.searchImages(imageData);
 			
@@ -41,30 +41,32 @@ public class Workflow {
 				subject.onCompleted();
 				return "ok";
 			}
-			subject.onNext("Downloading images...");
-			downloadService.downloadImages(images, outputDirectory);
+			//subject.onNext("Downloading images...");
+			//downloadService.downloadImages(images, outputDirectory);
 			
 			//Getting the local filepath's of the downloaded images
-			String img1 = outputDirectory + images.get(0).getName() + ".zip";
-			String img2 = outputDirectory + images.get(1).getName() + ".zip";
-//			subject.onNext("Already downloaded...");
-//			String img1 = "/media/indiana/data/ia/S1A_IW_GRDH_1SSV_20160601T135202_20160601T135227_011518_011929_0EE2.zip";
-//			String img2 = "/media/indiana/data/ia/S1A_IW_GRDH_1SSV_20160905T135207_20160905T135232_012918_0146C0_ECCC.zip";
+//			String img1 = outputDirectory + images.get(0).getName() + ".zip";
+//			String img2 = outputDirectory + images.get(1).getName() + ".zip";
+			subject.onNext("Already downloaded...");
+			String img1 = "/snap/S1A_IW_GRDH_1SDV_20170105T162336_20170105T162401_014699_017EA8_6FBA.zip";
+			String img2 = "/snap/S1B_IW_GRDH_1SDV_20170105T043023_20170105T043048_003708_0065EB_4107.zip";
 			System.out.println("The first img's filepath is:" + img1);
 			System.out.println("The second img's filepath is:" + img2);
 			
 			//Preparing subseting
 			subject.onNext("Performing subseting...");
-		    String img1name = images.get(0).getName();
-		    String img2name = images.get(1).getName();
+//		    String img1name = images.get(0).getName();
+//		    String img2name = images.get(1).getName();
+		    String img1name = "S1A_IW_GRDH_1SDV_20170105T162336_20170105T162401_014699_017EA8_6FBA";
+		    String img2name = "S1B_IW_GRDH_1SDV_20170105T043023_20170105T043048_003708_0065EB_4107";
 			String polygonFixed = imageData.getArea().toString().replace("(", "\\(");
 			polygonFixed = polygonFixed.replace(")", "\\)");
 			System.out.println("polygonFixed "+polygonFixed);
 			//Run Subset operator
 			System.out.println("running Subset operator...");
-			RunSubset subsetOp1 = new RunSubset("runsubset.sh", "outputDirectory", img1, polygonFixed);
+			RunSubset subsetOp1 = new RunSubset("/runsubset.sh", "outputDirectory", img1, polygonFixed);
 		    String resultSubsetOp1 = subsetOp1.runSubset();
-		    RunSubset subsetOp2 = new RunSubset("runsubset.sh", "outputDirectory", img2, polygonFixed);
+		    RunSubset subsetOp2 = new RunSubset("/runsubset.sh", "outputDirectory", img2, polygonFixed);
 		    String resultSubsetOp2 = subsetOp2.runSubset();
 		    
 		    //Preparing change-detectioning
@@ -74,7 +76,7 @@ public class Workflow {
 			String sub2dim = outputDirectory + "subset_of_" + img2name + ".dim";
 			String sub2tif = outputDirectory + "subset_of_" + img2name + ".tif";
 			//Run change detection
-			RunChangeDetector runCD = new RunChangeDetector("runchangedet.sh", sub1dim, sub1tif, sub2dim, sub2tif);
+			RunChangeDetector runCD = new RunChangeDetector("/runchangedet.sh", sub1dim, sub1tif, sub2dim, sub2tif);
 	        String resultCD = runCD.runchangeDetector();
 
 			//Preparing DBScaning
@@ -83,7 +85,7 @@ public class Workflow {
 		    String img2cod = img2name.substring(img2name.length()-4);
 			String dbSCANoutput = img1cod + "vs" + img2cod + "coords.txt";
 			//Run DBScan	    
-			RunDBscan runDBS = new RunDBscan("rundbscan.sh", outputDirectory, "SparkChangeDetResult.dim", dbSCANoutput);
+			RunDBscan runDBS = new RunDBscan("/rundbscan.sh", outputDirectory, "SparkChangeDetResult.dim", dbSCANoutput);
 			String resultDBS = runDBS.runDBscan();
 			
 			ChangeDetection changeDetection = new RandomTestDetection();
