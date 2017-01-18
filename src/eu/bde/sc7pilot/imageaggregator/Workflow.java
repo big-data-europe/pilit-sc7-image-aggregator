@@ -64,9 +64,9 @@ public class Workflow {
 			System.out.println("polygonFixed "+polygonFixed);
 			//Run Subset operator
 			System.out.println("running Subset operator...");
-			RunSubset subsetOp1 = new RunSubset("/runsubset.sh", "outputDirectory", img1, polygonFixed);
+			RunSubset subsetOp1 = new RunSubset("/runsubset.sh", outputDirectory, img1, polygonFixed);
 		    String resultSubsetOp1 = subsetOp1.runSubset();
-		    RunSubset subsetOp2 = new RunSubset("/runsubset.sh", "outputDirectory", img2, polygonFixed);
+		    RunSubset subsetOp2 = new RunSubset("/runsubset.sh", outputDirectory, img2, polygonFixed);
 		    String resultSubsetOp2 = subsetOp2.runSubset();
 		    
 		    //Preparing change-detectioning
