@@ -48,10 +48,10 @@ public class Workflow {
 //			String img1 = outputDirectory + images.get(0).getName() + ".zip";
 //			String img2 = outputDirectory + images.get(1).getName() + ".zip";
 			subject.onNext("Already downloaded...");
-			String img1 = "/snap/S1A_IW_GRDH_1SDV_20170105T162336_20170105T162401_014699_017EA8_6FBA.zip";
-			String img2 = "/snap/S1B_IW_GRDH_1SDV_20170105T043023_20170105T043048_003708_0065EB_4107.zip";
-			System.out.println("The first img's filepath is:" + img1);
-			System.out.println("The second img's filepath is:" + img2);
+			String img1 = "S1A_IW_GRDH_1SDV_20170105T162336_20170105T162401_014699_017EA8_6FBA.zip";
+			String img2 = "S1B_IW_GRDH_1SDV_20170105T043023_20170105T043048_003708_0065EB_4107.zip";
+			System.out.println("The first img's filepath is:" + outputDirectory + img1);
+			System.out.println("The second img's filepath is:" + outputDirectory + img2);
 			
 			//Preparing subseting
 			subject.onNext("Performing subseting...");
