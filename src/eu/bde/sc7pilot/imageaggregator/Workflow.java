@@ -59,8 +59,8 @@ public class Workflow {
 //		    String img2name = images.get(1).getName();
 		    String img1name = "S1A_IW_GRDH_1SDV_20170105T162336_20170105T162401_014699_017EA8_6FBA";
 		    String img2name = "S1B_IW_GRDH_1SDV_20170105T043023_20170105T043048_003708_0065EB_4107";
-			String polygonFixed = imageData.getArea().toString().replace("(", "\\(");
-			polygonFixed = polygonFixed.replace(")", "\\)");
+			String polygonFixed = imageData.getArea().toString(); //.replace("(", "\\(");
+			//polygonFixed = polygonFixed.replace(")", "\\)");
 			System.out.println("polygonFixed "+polygonFixed);
 			//Run Subset operator
 			System.out.println("running Subset operator...");
