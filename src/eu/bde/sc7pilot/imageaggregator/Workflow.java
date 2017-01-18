@@ -15,6 +15,7 @@ import com.fasterxml.jackson.datatype.joda.JodaModule;
 import eu.bde.sc7pilot.imageaggregator.changeDetection.ChangeDetection;
 import eu.bde.sc7pilot.imageaggregator.changeDetection.RandomTestDetection;
 import eu.bde.sc7pilot.imageaggregator.changeDetection.RunChangeDetector;
+import eu.bde.sc7pilot.imageaggregator.changeDetection.RunSubset;
 import eu.bde.sc7pilot.imageaggregator.model.Change;
 import eu.bde.sc7pilot.imageaggregator.model.Image;
 import eu.bde.sc7pilot.imageaggregator.model.ImageData;
@@ -31,7 +32,7 @@ public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 //					if(!dir.exists()){
 //						dir.mkdir();
 //					}
-		 	String outputDirectory="/images/";		
+		 	String outputDirectory="/media/indiana/data/ia/";		
 			SearchService searchService=new SearchService(imageData.getUsername(),imageData.getPassword());
 			DownloadService downloadService=new DownloadService(imageData.getUsername(),imageData.getPassword());
 			subject.onNext("Searching for images...");
@@ -52,10 +53,33 @@ public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 			System.out.println("The first img's filepath is:" + img1);
 			System.out.println("The second img's filepath is:" + img2);
 			
-			//uncomment the next block to perform change detection
+			//Preparing subseting
+			subject.onNext("Performing subseting...");
+		    String img1name = images.get(0).getName();
+		    String img2name = images.get(1).getName();
+		    String img1cod = img1name.substring(img1name.length()-4);//last 4 characters of the image name
+		    String img2cod = img2name.substring(img2name.length()-4);
+			String polygonFixed = imageData.getArea().toString().replace("(", "\\(");
+			polygonFixed = polygonFixed.replace(")", "\\)");
+			System.out.println("polygonFixed "+polygonFixed);
+
+			//Run Subset operator
+			System.out.println("running subset operator...");
+			RunSubset subsetOp1 = new RunSubset("/media/indiana/data/ia/runsubset.sh", "/media/indiana/data/ia", img1, polygonFixed);
+		    String resultSubsetOp1 = subsetOp1.runSubset();
+		    RunSubset subsetOp2 = new RunSubset("/media/indiana/data/ia/runsubset.sh", "/media/indiana/data/ia", img2, polygonFixed);
+		    String resultSubsetOp2 = subsetOp2.runSubset();
+			
+			//Perform change detection 
+//			subject.onNext("performing change detection...");
+//			RunChangeDetector ch=new RunChangeDetector("/runchangedet.sh", img1, img2);
+//			String result=ch.runchangeDetector();
+			
+			//Perform change detection 
 			subject.onNext("performing change detection...");
-			RunChangeDetector ch=new RunChangeDetector("/runchangedet.sh", img1, img2);
-			String result=ch.runchangeDetector();
+//			RunChangeDetector ch = new RunChangeDetector("/runchangedet.sh", img1, img2);
+//			String result=ch.runchangeDetector();
+			
 			ChangeDetection changeDetection=new RandomTestDetection();
 			List<Change> changes=changeDetection.detectChanges(images, imageData);
 			GeotriplesClient client=new GeotriplesClient("http://geotriples","8080");
