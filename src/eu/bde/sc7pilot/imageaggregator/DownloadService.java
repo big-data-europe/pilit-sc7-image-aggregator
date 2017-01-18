@@ -24,8 +24,11 @@ public class DownloadService {
         	Image image=images.get(i);
             String imageName = image.getName();
             try {
+            	long startDownl = System.currentTimeMillis();
                 imageService.downloadAndSaveById(image.getId(), outputDirectory + imageName + ".zip");
-                System.out.println("Image "+i+" was saved successfully");
+                long endDownl = System.currentTimeMillis();
+                long downlTime = (endDownl - startDownl)/60000;
+                System.out.println(downlTime + " mins for Downloading and saving Image No.: "+i);
             } catch (Exception e) {
                 e.printStackTrace();
             }

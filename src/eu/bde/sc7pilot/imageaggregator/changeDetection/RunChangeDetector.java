@@ -8,20 +8,23 @@ import org.apache.commons.io.IOUtils;
 public class RunChangeDetector {
 	private String scriptPath;
 	private String img1;
+	private String tif1;
 	private String img2;
-	
+	private String tif2;
 	//public static void main(String[] args) throws IOException {
 	//	RunChangeDetector ch=new RunChangeDetector("test.sh");
 	//	ch.runchangeDetector();
 	//}
-	public RunChangeDetector(String scriptPath, String img1, String img2) {
+	public RunChangeDetector(String scriptPath, String img1, String tif1, String img2, String tif2) {
 		this.scriptPath = scriptPath;
 		this.img1 = img1;
+		this.tif1 = tif1;
 		this.img2 = img2;
+		this.tif2 = tif2;
 	}
 
 	public String  runchangeDetector()throws IOException {
-		ProcessBuilder pb = new ProcessBuilder(scriptPath, img1, img2);
+		ProcessBuilder pb = new ProcessBuilder(scriptPath, img1, tif1, img2, tif2);
 		pb.redirectErrorStream(true);
 		
 		//Returns a string map view of this process builder's environment. Whenever a process builder is created, \

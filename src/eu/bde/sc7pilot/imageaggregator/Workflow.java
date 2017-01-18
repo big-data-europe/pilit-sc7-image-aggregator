@@ -32,7 +32,7 @@ public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 //					if(!dir.exists()){
 //						dir.mkdir();
 //					}
-		 	String outputDirectory="/media/indiana/data/ia/";		
+		 	String outputDirectory = "/media/indiana/data/ia/";		
 			SearchService searchService=new SearchService(imageData.getUsername(),imageData.getPassword());
 			DownloadService downloadService=new DownloadService(imageData.getUsername(),imageData.getPassword());
 			subject.onNext("Searching for images...");
@@ -45,11 +45,14 @@ public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 				return "ok";
 			}
 			subject.onNext("Downloading images...");
-			downloadService.downloadImages(images, outputDirectory);
+			//downloadService.downloadImages(images, outputDirectory);
 			
 			//Getting the local filepath's of the downloaded images
-			String img1 = outputDirectory + images.get(0).getName() + ".zip";
-			String img2 = outputDirectory + images.get(1).getName() + ".zip";
+//			String img1 = outputDirectory + images.get(0).getName() + ".zip";
+//			String img2 = outputDirectory + images.get(1).getName() + ".zip";
+			subject.onNext("Already downloaded...");
+			String img1 = "/media/indiana/data/ia/S1A_IW_GRDH_1SSV_20160601T135202_20160601T135227_011518_011929_0EE2.zip";
+			String img2 = "/media/indiana/data/ia/S1A_IW_GRDH_1SSV_20160905T135207_20160905T135232_012918_0146C0_ECCC.zip";
 			System.out.println("The first img's filepath is:" + img1);
 			System.out.println("The second img's filepath is:" + img2);
 			
@@ -62,14 +65,23 @@ public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 			String polygonFixed = imageData.getArea().toString().replace("(", "\\(");
 			polygonFixed = polygonFixed.replace(")", "\\)");
 			System.out.println("polygonFixed "+polygonFixed);
-
 			//Run Subset operator
 			System.out.println("running subset operator...");
 			RunSubset subsetOp1 = new RunSubset("/media/indiana/data/ia/runsubset.sh", "/media/indiana/data/ia", img1, polygonFixed);
 		    String resultSubsetOp1 = subsetOp1.runSubset();
 		    RunSubset subsetOp2 = new RunSubset("/media/indiana/data/ia/runsubset.sh", "/media/indiana/data/ia", img2, polygonFixed);
 		    String resultSubsetOp2 = subsetOp2.runSubset();
-			
+		    
+		    //Preparing change-detectioning
+		    subject.onNext("performing change-detection...");
+			String sub1dim = outputDirectory + "subset_of_" + img1name + ".dim";
+			String sub1tif = outputDirectory + "subset_of_" + img1name + ".tif";
+			String sub2dim = outputDirectory + "subset_of_" + img2name + ".dim";
+			String sub2tif = outputDirectory + "subset_of_" + img2name + ".tif";
+			//Run change detection
+			RunChangeDetector runCD = new RunChangeDetector("/media/indiana/data/ia/runchangedet.sh", sub1dim, sub1tif, sub2dim, sub2tif);
+	        String resultCD = runCD.runchangeDetector();
+
 			//Perform change detection 
 //			subject.onNext("performing change detection...");
 //			RunChangeDetector ch=new RunChangeDetector("/runchangedet.sh", img1, img2);
