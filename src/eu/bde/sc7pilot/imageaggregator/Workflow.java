@@ -15,6 +15,7 @@ import com.fasterxml.jackson.datatype.joda.JodaModule;
 import eu.bde.sc7pilot.imageaggregator.changeDetection.ChangeDetection;
 import eu.bde.sc7pilot.imageaggregator.changeDetection.RandomTestDetection;
 import eu.bde.sc7pilot.imageaggregator.changeDetection.RunChangeDetector;
+import eu.bde.sc7pilot.imageaggregator.changeDetection.RunDBscan;
 import eu.bde.sc7pilot.imageaggregator.changeDetection.RunSubset;
 import eu.bde.sc7pilot.imageaggregator.model.Change;
 import eu.bde.sc7pilot.imageaggregator.model.Image;
@@ -44,7 +45,7 @@ public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 				subject.onCompleted();
 				return "ok";
 			}
-			subject.onNext("Downloading images...");
+			//subject.onNext("Downloading images...");
 			//downloadService.downloadImages(images, outputDirectory);
 			
 			//Getting the local filepath's of the downloaded images
@@ -60,20 +61,18 @@ public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 			subject.onNext("Performing subseting...");
 		    String img1name = images.get(0).getName();
 		    String img2name = images.get(1).getName();
-		    String img1cod = img1name.substring(img1name.length()-4);//last 4 characters of the image name
-		    String img2cod = img2name.substring(img2name.length()-4);
 			String polygonFixed = imageData.getArea().toString().replace("(", "\\(");
 			polygonFixed = polygonFixed.replace(")", "\\)");
 			System.out.println("polygonFixed "+polygonFixed);
 			//Run Subset operator
-			System.out.println("running subset operator...");
-			RunSubset subsetOp1 = new RunSubset("/media/indiana/data/ia/runsubset.sh", "/media/indiana/data/ia", img1, polygonFixed);
+			System.out.println("running Subset operator...");
+			RunSubset subsetOp1 = new RunSubset("/media/indiana/data/ia/runsubset.sh", "outputDirectory", img1, polygonFixed);
 		    String resultSubsetOp1 = subsetOp1.runSubset();
-		    RunSubset subsetOp2 = new RunSubset("/media/indiana/data/ia/runsubset.sh", "/media/indiana/data/ia", img2, polygonFixed);
+		    RunSubset subsetOp2 = new RunSubset("/media/indiana/data/ia/runsubset.sh", "outputDirectory", img2, polygonFixed);
 		    String resultSubsetOp2 = subsetOp2.runSubset();
 		    
 		    //Preparing change-detectioning
-		    subject.onNext("performing change-detection...");
+		    subject.onNext("performing Change-Detection...");
 			String sub1dim = outputDirectory + "subset_of_" + img1name + ".dim";
 			String sub1tif = outputDirectory + "subset_of_" + img1name + ".tif";
 			String sub2dim = outputDirectory + "subset_of_" + img2name + ".dim";
@@ -82,24 +81,24 @@ public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 			RunChangeDetector runCD = new RunChangeDetector("/media/indiana/data/ia/runchangedet.sh", sub1dim, sub1tif, sub2dim, sub2tif);
 	        String resultCD = runCD.runchangeDetector();
 
-			//Perform change detection 
-//			subject.onNext("performing change detection...");
-//			RunChangeDetector ch=new RunChangeDetector("/runchangedet.sh", img1, img2);
-//			String result=ch.runchangeDetector();
+			//Preparing DBScaning
+	        subject.onNext("performing DBScan...");
+		    String img1cod = img1name.substring(img1name.length()-4);//last 4 characters of the image name
+		    String img2cod = img2name.substring(img2name.length()-4);
+			String dbSCANoutput = img1cod + "vs" + img2cod + "coords.txt";
+			//Run DBScan	    
+			RunDBscan runDBS = new RunDBscan("/media/indiana/data/ia/rundbscan.sh", outputDirectory, "SparkChangeDetResult.dim", dbSCANoutput);
+			String resultDBS = runDBS.runDBscan();
 			
-			//Perform change detection 
-			subject.onNext("performing change detection...");
-//			RunChangeDetector ch = new RunChangeDetector("/runchangedet.sh", img1, img2);
-//			String result=ch.runchangeDetector();
-			
-			ChangeDetection changeDetection=new RandomTestDetection();
-			List<Change> changes=changeDetection.detectChanges(images, imageData);
+			ChangeDetection changeDetection = new RandomTestDetection();
+			List<Change> changes = changeDetection.detectChanges(images, imageData);
 			GeotriplesClient client=new GeotriplesClient("http://geotriples","8080");
 			client.saveChanges(changes);
+			
 			//uncomment the next line to see the output of the shell script
 			//subject.onNext(result.substring(0, 20));
 			
-			subject.onNext("Change detection completed successfully.");
+			//subject.onNext("Change detection completed successfully.");
 			ObjectMapper objectMapper=new ObjectMapper();
 			objectMapper.registerModule(new JodaModule());
 			objectMapper.registerModule(new JtsModule());
@@ -111,15 +110,16 @@ public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 			
 			subject.onCompleted();
 			return "ok";
-		 }catch (NotAuthorizedException e) {
-		        subject.onError(e);
-		        return "error";
-		    }
-			 catch (Exception e) {
-		        subject.onError(e);
-		        return "error";
-		    }
-}
+		 }
+	 catch (NotAuthorizedException e) {
+		 subject.onError(e);
+		 return "error";
+		 }
+		 catch (Exception e) {
+			 subject.onError(e);
+		     return "error";
+		     }
+	 }
 public Observable<String> downloadImages(ImageData imageData) throws Exception {
 	final ReplaySubject<String> subject = ReplaySubject.create();
 	detectChangesAsync(imageData,subject).handle((ok, ex) -> {
