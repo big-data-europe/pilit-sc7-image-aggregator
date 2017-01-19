@@ -48,8 +48,8 @@ public class Workflow {
 //			String img1 = outputDirectory + images.get(0).getName() + ".zip";
 //			String img2 = outputDirectory + images.get(1).getName() + ".zip";
 			subject.onNext("Already downloaded...");
-			String img1 = "S1A_IW_GRDH_1SSV_20160601T135202_20160601T135227_011518_011929_0EE2.zip";
-			String img2 = "S1A_IW_GRDH_1SSV_20160905T135207_20160905T135232_012918_0146C0_ECCC.zip";
+			String img1 = "S1A_IW_GRDH_1SSV_20141225T142407_20141225T142436_003877_004A54_040F.zip";
+			String img2 = "S1A_IW_GRDH_1SSV_20150518T142409_20150518T142438_005977_007B49_AF76.zip";
 			System.out.println("The first img's filepath is:" + outputDirectory + img1);
 			System.out.println("The second img's filepath is:" + outputDirectory + img2);
 			
@@ -57,8 +57,8 @@ public class Workflow {
 			subject.onNext("Performing subseting...");
 //		    String img1name = images.get(0).getName();
 //		    String img2name = images.get(1).getName();
-		    String img1name = "S1A_IW_GRDH_1SSV_20160601T135202_20160601T135227_011518_011929_0EE2";
-		    String img2name = "S1A_IW_GRDH_1SSV_20160905T135207_20160905T135232_012918_0146C0_ECCC";
+		    String img1name = "S1A_IW_GRDH_1SSV_20141225T142407_20141225T142436_003877_004A54_040F";
+		    String img2name = "S1A_IW_GRDH_1SSV_20150518T142409_20150518T142438_005977_007B49_AF76";
 			String polygonFixed = imageData.getArea().toString(); //.replace("(", "\\(");
 			//polygonFixed = polygonFixed.replace(")", "\\)");
 			System.out.println("polygonFixed "+polygonFixed);
@@ -95,7 +95,7 @@ public class Workflow {
 			GeotriplesClient client = new GeotriplesClient("http://geotriples","8080");
 			client.saveChanges(changes);
 			
-			ObjectMapper objectMapper=new ObjectMapper();
+			ObjectMapper objectMapper = new ObjectMapper();
 			objectMapper.registerModule(new JodaModule());
 			objectMapper.registerModule(new JtsModule());
 			
