@@ -44,24 +44,21 @@ public class Workflow {
 			subject.onNext("Downloading images...");
 			downloadService.downloadImages(images, outputDirectory);
 			
-			//Getting the local filepath's of the downloaded images
-			String img1 = outputDirectory + images.get(0).getName() + ".zip";
-			String img2 = outputDirectory + images.get(1).getName() + ".zip";
-//			subject.onNext("Already downloaded...");
-//			String img1 = "/media/indiana/data/ia/S1A_IW_GRDH_1SSV_20160601T135202_20160601T135227_011518_011929_0EE2.zip";
-//			String img2 = "/media/indiana/data/ia/S1A_IW_GRDH_1SSV_20160905T135207_20160905T135232_012918_0146C0_ECCC.zip";
-			System.out.println("The first img's filepath is:" + img1);
-			System.out.println("The second img's filepath is:" + img2);
+			//Name-processing of the downloaded images
+		    String img1name = images.get(0).getName();
+		    String img2name = images.get(1).getName();
+			String img1 = img1name + ".zip";
+			String img2 = img2name + ".zip";
+			System.out.println("The first img's filepath is: " + outputDirectory + img1);
+			System.out.println("The second img's filepath is: " + outputDirectory + img2);
 			
 			//Preparing subseting
 			subject.onNext("Performing subseting...");
-		    String img1name = images.get(0).getName();
-		    String img2name = images.get(1).getName();
 			String polygonFixed = imageData.getArea().toString(); //.replace("(", "\\(");
 			//polygonFixed = polygonFixed.replace(")", "\\)");
-			System.out.println("polygonFixed: " + polygonFixed);
+			System.out.println("Polygon for SubsetOp: " + polygonFixed);
 			//Run Subset operator
-			System.out.println("running Subset operator...");
+			System.out.println("Running Subset operator...");
 			RunSubset subsetOp1 = new RunSubset("/runsubset.sh", outputDirectory, img1, polygonFixed);
 		    String resultSubsetOp1 = subsetOp1.runSubset();
 		    RunSubset subsetOp2 = new RunSubset("/runsubset.sh", outputDirectory, img2, polygonFixed);
