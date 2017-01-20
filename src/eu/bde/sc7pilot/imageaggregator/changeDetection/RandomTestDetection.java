@@ -44,8 +44,7 @@ public class RandomTestDetection implements ChangeDetection {
 //				System.out.println("Line: " + counter + " : " + line);
 		    }
 		}
-		System.out.println("Number Of Lines in geometriesArrayList: " + geometriesArrayList.size());
-		System.out.println("Array's 1st object: " + geometriesArrayList.get(0));		
+		System.out.println("Number Of Lines in geometriesArrayList: " + geometriesArrayList.size());		
 		
 		if (geometriesArrayList.size() == 0) {
 			// If we have an empty DBScan-output, then we make 3 dummy for posing!
