@@ -35,19 +35,20 @@ public class RandomTestDetection implements ChangeDetection {
 		Envelope env = imageData.getArea().getEnvelopeInternal();
 		
 		//*** Take the real DBScan result and return its polygons as changes
-		String[] geometriesArray = new String[1000000];
+		ArrayList<String> geometriesArrayList = new ArrayList<>();
+		//String[] geometriesArray = new String[1000000];
 		String line = "";
 		int counter = 0;
 		try (BufferedReader br = new BufferedReader(new FileReader(finalOutput))) {
 			while ((line = br.readLine()) != null) {
 //				System.out.println("Counter: " + counter);
-				geometriesArray[counter++] = line;
+				geometriesArrayList.add(line);
 //				System.out.println("Line: " + counter + " : " + line);
 		    }
 		}
 		System.out.println("counter = " + counter);
-		System.out.println("Number Of Lines in geometriesArray: " + geometriesArray.length);
-		System.out.println("Array's 1st object: " + geometriesArray[0]);
+		System.out.println("Number Of Lines in geometriesArrayList: " + geometriesArrayList.size());
+		System.out.println("Array's 1st object: " + geometriesArrayList.get(0));
 		
 		WKTReader wktReader = new WKTReader();		
 		Geometry geometries;
@@ -56,10 +57,10 @@ public class RandomTestDetection implements ChangeDetection {
 		Change change = null;
 		for (int i = 0; i < counter; i++)
 		{
-			geometries = wktReader.read(geometriesArray[i]);
+			geometries = wktReader.read(geometriesArrayList.get(i));
 			area = new Area(("ChangedArea" + i), geometries, IdRetrieval.getId(false));
 			change = new Change(IdRetrieval.getId(true), parser22.parseDateTime(sourceImage.getDate().toString()),
-					parser22.parseDateTime(targetImage.getDate().toString()), area, targetImage.getName());
+					parser22.parseDateTime(targetImage.getDate().toString()), area, sourceImage.getName(), targetImage.getName());
 			changes.add(change);
 		}
 		

@@ -33,7 +33,7 @@ public class Workflow {
 			SearchService searchService = new SearchService(imageData.getUsername(),imageData.getPassword());
 			DownloadService downloadService = new DownloadService(imageData.getUsername(),imageData.getPassword());
 			subject.onNext("Searching for images...");
-			List<Image> images=searchService.searchImages(imageData);
+			List<Image> images = searchService.searchImages(imageData);
 			
 			if(images.size()<=1)
 			{
