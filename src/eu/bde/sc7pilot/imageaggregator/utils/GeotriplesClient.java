@@ -40,14 +40,14 @@ public class GeotriplesClient {
 		objectMapper.registerModule(new JodaModule());
 		objectMapper.registerModule(new JtsModule());
 		objectMapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false));
-//		try {
-//			String res = objectMapper.writeValueAsString(changes);
-//			System.out.println("changes are sending to geotriples");
-//		} 
-//		catch (JsonProcessingException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		try {
+			String res = objectMapper.writeValueAsString(changes);
+			System.out.println("changes are sending to geotriples");
+		} 
+		catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		URI uri = UriBuilder.fromUri(host + ":" + port + "/geotriples/changes").build();
 		System.out.println("Geotriples URL is: " + uri.toString());
 		WebTarget target = client.target(uri);
