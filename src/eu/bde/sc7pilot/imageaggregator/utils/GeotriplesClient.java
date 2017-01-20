@@ -41,14 +41,17 @@ public class GeotriplesClient {
 		objectMapper.registerModule(new JodaModule());
 		objectMapper.registerModule(new JtsModule());
 		objectMapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false));
-		try {
-			String res = objectMapper.writeValueAsString(changes);
-			System.out.println("Sending changes to geotriples: " + res);
-		} 
-		catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
+		// Printing changes to console. I they are more than a few the systems has SEVERE ERROR!!!
+//		try {
+//			String res = objectMapper.writeValueAsString(changes);
+//			System.out.println("Sending changes to geotriples: " + res);
+//		} 
+//		catch (JsonProcessingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
 		URI uri = UriBuilder.fromUri(host + ":" + port + "/geotriples/changes").build();
 		System.out.println("Geotriples URL is: " + uri.toString());
 		WebTarget target = client.target(uri);
