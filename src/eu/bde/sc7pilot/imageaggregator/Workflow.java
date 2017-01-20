@@ -59,15 +59,15 @@ public class Workflow {
 //		    String img2name = images.get(1).getName();
 		    String img1name = "S1A_IW_GRDH_1SSV_20141225T142407_20141225T142436_003877_004A54_040F";
 		    String img2name = "S1A_IW_GRDH_1SSV_20150518T142409_20150518T142438_005977_007B49_AF76";
-			String polygonFixed = imageData.getArea().toString(); //.replace("(", "\\(");
+			String polygonSelected = imageData.getArea().toString(); //.replace("(", "\\(");
 			//polygonFixed = polygonFixed.replace(")", "\\)");
-			System.out.println("polygonFixed "+polygonFixed);
+			System.out.println("PolygonSelected: " + polygonSelected);
 			//Run Subset operator
 			System.out.println("running Subset operator...");
-			RunSubset subsetOp1 = new RunSubset("/runsubset.sh", outputDirectory, img1, polygonFixed);
-		    String resultSubsetOp1 = subsetOp1.runSubset();
-		    RunSubset subsetOp2 = new RunSubset("/runsubset.sh", outputDirectory, img2, polygonFixed);
-		    String resultSubsetOp2 = subsetOp2.runSubset();
+			RunSubset subsetOp1 = new RunSubset("/runsubset.sh", outputDirectory, img1, polygonSelected);
+		    //String resultSubsetOp1 = subsetOp1.runSubset();
+		    RunSubset subsetOp2 = new RunSubset("/runsubset.sh", outputDirectory, img2, polygonSelected);
+		    //String resultSubsetOp2 = subsetOp2.runSubset();
 		    
 		    //Preparing change-detectioning
 		    subject.onNext("performing Change-Detection...");
@@ -77,7 +77,7 @@ public class Workflow {
 			String sub2tif = outputDirectory + "subset_of_" + img2name + ".tif";
 			//Run change detection
 			RunChangeDetector runCD = new RunChangeDetector("/runchangedet.sh", sub1dim, sub1tif, sub2dim, sub2tif);
-	        String resultCD = runCD.runchangeDetector();
+	        //String resultCD = runCD.runchangeDetector();
 			//uncomment the next line to see the output of the shell script
 			//subject.onNext(result.substring(0, 20));
 
@@ -88,10 +88,12 @@ public class Workflow {
 			String dbSCANoutput = img1cod + "vs" + img2cod + "coords.txt";
 			//Run DBScan	    
 			RunDBscan runDBS = new RunDBscan("/rundbscan.sh", outputDirectory, "SparkChangeDetResult.dim", dbSCANoutput);
-			String resultDBS = runDBS.runDBscan();
+			//String resultDBS = runDBS.runDBscan();
+			//String dbSCANoutputFilepath = outputDirectory + dbSCANoutput; //general case
+			String dbSCANoutputFilepath = "/snap/0EE2vsECCCcoords.txt";
 			
 			ChangeDetection changeDetection = new RandomTestDetection();
-			List<Change> changes = changeDetection.detectChanges(images, imageData);
+			List<Change> changes = changeDetection.detectChanges(images, imageData, dbSCANoutputFilepath);
 			GeotriplesClient client = new GeotriplesClient("http://geotriples","8080");
 			client.saveChanges(changes);
 			
