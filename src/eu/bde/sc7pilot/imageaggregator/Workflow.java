@@ -82,9 +82,10 @@ public class Workflow {
 			//Run DBScan	    
 			RunDBscan runDBS = new RunDBscan("/rundbscan.sh", outputDirectory, "SparkChangeDetResult.dim", dbSCANoutput);
 			String resultDBS = runDBS.runDBscan();
+			String dbSCANoutputFilepath = outputDirectory + dbSCANoutput;
 			
 			ChangeDetection changeDetection = new RandomTestDetection();
-			List<Change> changes = changeDetection.detectChanges(images, imageData);
+			List<Change> changes = changeDetection.detectChanges(images, imageData, dbSCANoutputFilepath);
 			GeotriplesClient client = new GeotriplesClient("http://geotriples","8080");
 			client.saveChanges(changes);
 			

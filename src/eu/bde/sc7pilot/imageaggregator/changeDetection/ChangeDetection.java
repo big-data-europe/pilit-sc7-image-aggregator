@@ -7,5 +7,6 @@ import eu.bde.sc7pilot.imageaggregator.model.Image;
 import eu.bde.sc7pilot.imageaggregator.model.ImageData;
 
 public interface ChangeDetection {
-	public List<Change> detectChanges(List<Image> images,ImageData imageData) throws Exception;
+	
+	public List<Change> detectChanges(List<Image> images, ImageData imageData, String finalOutput) throws Exception;
 }
