@@ -97,6 +97,7 @@ public class Workflow {
 			List<Change> changes = changeDetection.detectChanges(images, imageData, dbSCANoutputFilepath);
 			
 			// Visualizing Polygons with chnages to Sextant
+			System.out.println("Visualizing results...");
 			ObjectMapper objectMapper = new ObjectMapper();
 			objectMapper.registerModule(new JodaModule());
 			objectMapper.registerModule(new JtsModule());			
@@ -106,6 +107,7 @@ public class Workflow {
 			subject.onNext(res);
 			
 			//Storing to Strabon through Geotriples
+			System.out.println("Storing results...");
 			GeotriplesClient client = new GeotriplesClient("http://geotriples","8080");
 			client.saveChanges(changes);
 			

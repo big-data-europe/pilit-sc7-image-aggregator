@@ -28,6 +28,7 @@ public class GeotriplesClient {
 	
 	private String host;
 	private String port;
+	
 	public GeotriplesClient(String host,String port) {
 		this.host = host;
 		this.port = port;
@@ -42,7 +43,7 @@ public class GeotriplesClient {
 		objectMapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false));
 		try {
 			String res = objectMapper.writeValueAsString(changes);
-			System.out.println("changes are sending to geotriples");
+			System.out.println("Sending changes to geotriples: " + res);
 		} 
 		catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
@@ -53,7 +54,7 @@ public class GeotriplesClient {
 		WebTarget target = client.target(uri);
 		Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
 		Response response = invocationBuilder.post(Entity.entity(changes, MediaType.APPLICATION_JSON),Response.class);
-		System.out.println("Geotriples response: " + response.getStatus() + " " + response.readEntity(String.class));
+		System.out.println("Geotriples' response: " + response.getStatus() + " " + response.readEntity(String.class));
 	}
 
 }
