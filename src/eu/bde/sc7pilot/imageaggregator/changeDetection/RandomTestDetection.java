@@ -53,7 +53,7 @@ public class RandomTestDetection implements ChangeDetection {
 		Geometry geometries;
 		Area area;
 		DateTimeFormatter parser22 = ISODateTimeFormat.dateTimeParser();
-		Change change;
+		Change change = null;
 		for (int i = 0; i < counter; i++)
 		{
 			geometries = wktReader.read(geometriesArray[i]);
