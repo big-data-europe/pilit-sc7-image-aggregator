@@ -52,6 +52,14 @@ public class Change {
 		this.targetName = targetName;
 	}
 	
+	public Change(Long id, DateTime sourceDate, DateTime targetDate, Area area, String targetName) {
+		this.area = area;
+		this.id = id;
+		this.sourceDate = sourceDate;
+		this.targetDate = targetDate;
+		this.targetName = targetName;
+	}
+	
 	public Area getArea() {
 		return area;
 	}

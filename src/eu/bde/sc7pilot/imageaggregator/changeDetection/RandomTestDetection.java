@@ -40,12 +40,14 @@ public class RandomTestDetection implements ChangeDetection {
 		int counter = 0;
 		try (BufferedReader br = new BufferedReader(new FileReader(finalOutput))) {
 			while ((line = br.readLine()) != null) {
-				System.out.println("Counter: " + counter);
+//				System.out.println("Counter: " + counter);
 				geometriesArray[counter++] = line;
-				System.out.println("Line: " + counter + " : " + line);
+//				System.out.println("Line: " + counter + " : " + line);
 		    }
 		}
 		System.out.println("counter = " + counter);
+		System.out.println("Number Of Lines in geometriesArray: " + geometriesArray.length);
+		System.out.println("Array's 1st object: " + geometriesArray[0]);
 		
 		WKTReader wktReader = new WKTReader();		
 		Geometry geometries;
@@ -55,9 +57,9 @@ public class RandomTestDetection implements ChangeDetection {
 		for (int i = 0; i < counter; i++)
 		{
 			geometries = wktReader.read(geometriesArray[i]);
-			area = new Area(("Amatrice"+i),geometries,IdRetrieval.getId(false));
-			change = new Change(IdRetrieval.getId(true),parser22.parseDateTime(sourceImage.getDate().toString()),
-					parser22.parseDateTime(targetImage.getDate().toString()),area, sourceImage.getName(), targetImage.getName());
+			area = new Area(("ChangedArea" + i), geometries, IdRetrieval.getId(false));
+			change = new Change(IdRetrieval.getId(true), parser22.parseDateTime(sourceImage.getDate().toString()),
+					parser22.parseDateTime(targetImage.getDate().toString()), area, targetImage.getName());
 			changes.add(change);
 		}
 		
