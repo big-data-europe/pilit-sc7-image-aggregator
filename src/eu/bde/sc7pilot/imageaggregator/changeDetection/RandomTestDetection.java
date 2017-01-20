@@ -43,6 +43,7 @@ public class RandomTestDetection implements ChangeDetection {
 			while ((line = br.readLine()) != null) {
 //				System.out.println("Counter: " + counter);
 				geometriesArrayList.add(line);
+				counter++;
 //				System.out.println("Line: " + counter + " : " + line);
 		    }
 		}
@@ -55,7 +56,7 @@ public class RandomTestDetection implements ChangeDetection {
 		Area area;
 		DateTimeFormatter parser22 = ISODateTimeFormat.dateTimeParser();
 		Change change = null;
-		for (int i = 0; i < counter; i++)
+		for (int i = 0; i < geometriesArrayList.size(); i++)
 		{
 			geometries = wktReader.read(geometriesArrayList.get(i));
 			area = new Area(("ChangedArea" + i), geometries, IdRetrieval.getId(false));
