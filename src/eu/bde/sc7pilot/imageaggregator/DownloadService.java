@@ -13,10 +13,12 @@ public class DownloadService {
 
 	private String username;
 	private String password;
+	
 	public DownloadService(String username,String password) {
 		this.username=username;
 		this.password=password;
 	}
+	
     public void downloadImages(List<Image> images, String outputDirectory) {
     	System.out.println("images to download: "+images.size());
         DataClient imageService = new DataClient(username, password);
@@ -24,16 +26,16 @@ public class DownloadService {
         	Image image=images.get(i);
             String imageName = image.getName();
             try {
-            	long startDownl = System.currentTimeMillis();
+            	double startDownl = System.currentTimeMillis();
                 imageService.downloadAndSaveById(image.getId(), outputDirectory + imageName + ".zip");
-                long endDownl = System.currentTimeMillis();
+                double endDownl = System.currentTimeMillis();
                 double downlTime = (endDownl - startDownl)/60000;
-                System.out.println(downlTime + " mins for Downloading and saving Image No.: "+i);
-            } catch (Exception e) {
+                System.out.println(downlTime + " mins for Downloading and saving Image No.: " + i);
+            }
+            catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-
-       
+        }   
     }
+    
 }

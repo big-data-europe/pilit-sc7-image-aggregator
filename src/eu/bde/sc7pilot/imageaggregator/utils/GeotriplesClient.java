@@ -22,36 +22,43 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 import eu.bde.sc7pilot.imageaggregator.model.Change;
+import eu.bde.sc7pilot.imageaggregator.model.ChangeStore;
 import eu.bde.sc7pilot.imageaggregator.webconfig.ObjectMapperContextResolver;
 
 public class GeotriplesClient {
+	
 	private String host;
 	private String port;
+	
 	public GeotriplesClient(String host,String port) {
 		this.host=host;
 		this.port=port;
 	}
-	public void saveChanges(List<Change> changes) {
-		Client client = ClientBuilder.newClient(new ClientConfig()).register(ObjectMapperContextResolver.class)  // No need to register this provider if no special configuration is required.
-		        .register(JacksonFeature.class);
+	
+	public void saveChanges(List<ChangeStore> changesToStore) {
+		Client client = ClientBuilder.newClient(new ClientConfig()).register(ObjectMapperContextResolver.class).register(JacksonFeature.class);
 		ObjectMapper objectMapper=new ObjectMapper();
 		objectMapper.registerModule(new JodaModule());
 		objectMapper.registerModule(new JtsModule());
 		objectMapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false));
-		try {
-			String res=objectMapper.writeValueAsString(changes);
-			System.out.println("changes are sending to geotriples:"+res);
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		// Printing changes to console. I they are more than a few the systems has SEVERE ERROR!!!
+//		try {
+//			String res = objectMapper.writeValueAsString(changesToStore);
+//			System.out.println("Sending changes to geotriples: " + res);
+//		} 
+//		catch (JsonProcessingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
 		URI uri = UriBuilder.fromUri(host+":"+port+"/geotriples/changes").build();
 		System.out.println("geotriples url is:"+ uri.toString());
 		WebTarget target = client.target(uri);
 		Invocation.Builder invocationBuilder =
 				target.request(MediaType.APPLICATION_JSON);
-		Response response = invocationBuilder.post(Entity.entity(changes,MediaType.APPLICATION_JSON),
+		Response response = invocationBuilder.post(Entity.entity(changesToStore,MediaType.APPLICATION_JSON),
 				Response.class);
-		System.out.println("geotriples response: "+response.getStatus()+" "+response.readEntity(String.class));
+		System.out.println("geotriples response: " + response.getStatus() + " " + response.readEntity(String.class));
 	}
 }

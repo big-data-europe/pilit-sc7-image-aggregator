@@ -18,6 +18,7 @@ import eu.bde.sc7pilot.imageaggregator.changeDetection.RunChangeDetector;
 import eu.bde.sc7pilot.imageaggregator.changeDetection.RunDBscan;
 import eu.bde.sc7pilot.imageaggregator.changeDetection.RunSubset;
 import eu.bde.sc7pilot.imageaggregator.model.Change;
+import eu.bde.sc7pilot.imageaggregator.model.ChangeStore;
 import eu.bde.sc7pilot.imageaggregator.model.Image;
 import eu.bde.sc7pilot.imageaggregator.model.ImageData;
 import eu.bde.sc7pilot.imageaggregator.utils.GeotriplesClient;
@@ -33,20 +34,20 @@ public class Workflow {
 			SearchService searchService = new SearchService(imageData.getUsername(),imageData.getPassword());
 			DownloadService downloadService = new DownloadService(imageData.getUsername(),imageData.getPassword());
 			subject.onNext("Searching for images...");
-			List<Image> images=searchService.searchImages(imageData);
+			List<Image> images = searchService.searchImages(imageData);
 			
-			if(images.size()<=1)
+			if(images.size() <= 1)
 			{
 				subject.onNext("No images were found for the specified parameters.");
 				subject.onCompleted();
 				return "ok";
 			}
-			subject.onNext("Downloading images...");
-			downloadService.downloadImages(images, outputDirectory);
+			//subject.onNext("Downloading images...");
+			//downloadService.downloadImages(images, outputDirectory);
 			
 			//Name-processing of the downloaded images
-		    String img1name = images.get(0).getName();
-		    String img2name = images.get(1).getName();
+		    String img1name = "S1A_IW_GRDH_1SSV_20160601T135202_20160601T135227_011518_011929_0EE2";
+		    String img2name = "S1A_IW_GRDH_1SSV_20160905T135207_20160905T135232_012918_0146C0_ECCC";
 			String img1 = img1name + ".zip";
 			String img2 = img2name + ".zip";
 			System.out.println("The first img's filepath is: " + outputDirectory + img1);
@@ -54,18 +55,18 @@ public class Workflow {
 			
 			//Preparing subseting
 			subject.onNext("Performing subseting...");
-			String polygonFixed = imageData.getArea().toString(); //.replace("(", "\\(");
+			String polygonSelected = imageData.getArea().toString(); //.replace("(", "\\(");
 			//polygonFixed = polygonFixed.replace(")", "\\)");
-			System.out.println("Polygon for SubsetOp: " + polygonFixed);
+			System.out.println("Polygon for SubsetOp: " + polygonSelected);
 			//Run Subset operator
 			System.out.println("Running Subset operator...");
-			RunSubset subsetOp1 = new RunSubset("/runsubset.sh", outputDirectory, img1, polygonFixed);
+			RunSubset subsetOp1 = new RunSubset("/runsubset.sh", outputDirectory, img1, polygonSelected);
 		    String resultSubsetOp1 = subsetOp1.runSubset();
-		    RunSubset subsetOp2 = new RunSubset("/runsubset.sh", outputDirectory, img2, polygonFixed);
+		    RunSubset subsetOp2 = new RunSubset("/runsubset.sh", outputDirectory, img2, polygonSelected);
 		    String resultSubsetOp2 = subsetOp2.runSubset();
 		    
 		    //Preparing change-detectioning
-		    subject.onNext("performing Change-Detection...");
+		    System.out.println("performing Change-Detection...");
 			String sub1dim = outputDirectory + "subset_of_" + img1name + ".dim";
 			String sub1tif = outputDirectory + "subset_of_" + img1name + ".tif";
 			String sub2dim = outputDirectory + "subset_of_" + img2name + ".dim";
@@ -73,9 +74,11 @@ public class Workflow {
 			//Run change detection
 			RunChangeDetector runCD = new RunChangeDetector("/runchangedet.sh", sub1dim, sub1tif, sub2dim, sub2tif);
 	        String resultCD = runCD.runchangeDetector();
+			//uncomment the next line to see the output of the shell script
+			//subject.onNext(result.substring(0, 20));
 
 			//Preparing DBScaning
-	        subject.onNext("performing DBScan...");
+	        System.out.println("performing DBScan...");
 		    String img1cod = img1name.substring(img1name.length()-4);//last 4 characters of the image name
 		    String img2cod = img2name.substring(img2name.length()-4);
 			String dbSCANoutput = img1cod + "vs" + img2cod + "coords.txt";
@@ -83,25 +86,26 @@ public class Workflow {
 			RunDBscan runDBS = new RunDBscan("/rundbscan.sh", outputDirectory, "SparkChangeDetResult.dim", dbSCANoutput);
 			String resultDBS = runDBS.runDBscan();
 			String dbSCANoutputFilepath = outputDirectory + dbSCANoutput;
-			
+
+			// Processing the DBScan's output with polygons defining possible changes
 			ChangeDetection changeDetection = new RandomTestDetection();
-			List<Change> changes = changeDetection.detectChanges(images, imageData, dbSCANoutputFilepath);
+			
+			//Storing to Strabon through Geotriples
+			System.out.println("Storing results...");
+			List<ChangeStore> changesToStore = changeDetection.detectChangesForStore(images, imageData, dbSCANoutputFilepath);
 			GeotriplesClient client = new GeotriplesClient("http://geotriples","8080");
-			client.saveChanges(changes);
-			
-			//uncomment the next line to see the output of the shell script
-			//subject.onNext(result.substring(0, 20));
-			
-			//subject.onNext("Change detection completed successfully.");
-			ObjectMapper objectMapper=new ObjectMapper();
+			client.saveChanges(changesToStore);
+
+			// Visualizing Polygons with changes to Sextant			
+			List<Change> changes = changeDetection.detectChanges(images, imageData, dbSCANoutputFilepath);
+			System.out.println("Visualizing results...");
+			ObjectMapper objectMapper = new ObjectMapper();
 			objectMapper.registerModule(new JodaModule());
-			objectMapper.registerModule(new JtsModule());
-			
+			objectMapper.registerModule(new JtsModule());			
 			objectMapper.setConfig(objectMapper.getSerializationConfig().withView(Views.Public.class));
 			objectMapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false));
-			String res=objectMapper.writerWithView(Views.Public.class).writeValueAsString(changes);
-			subject.onNext(res);
-			
+			String res = objectMapper.writerWithView(Views.Public.class).writeValueAsString(changes);
+			subject.onNext(res);			
 			subject.onCompleted();
 			return "ok";
 			}
