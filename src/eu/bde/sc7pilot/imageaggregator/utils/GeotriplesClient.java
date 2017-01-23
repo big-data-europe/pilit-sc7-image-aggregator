@@ -43,14 +43,14 @@ public class GeotriplesClient {
 		objectMapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false));
 		
 		// Printing changes to console. I they are more than a few the systems has SEVERE ERROR!!!
-//		try {
-//			String res = objectMapper.writeValueAsString(changes);
-//			System.out.println("Sending changes to geotriples: " + res);
-//		} 
-//		catch (JsonProcessingException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		try {
+			String res = objectMapper.writeValueAsString(changes);
+			System.out.println("Sending changes to geotriples: " + res);
+		} 
+		catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		URI uri = UriBuilder.fromUri(host + ":" + port + "/geotriples/changes").build();
 		System.out.println("Geotriples URL is: " + uri.toString());
