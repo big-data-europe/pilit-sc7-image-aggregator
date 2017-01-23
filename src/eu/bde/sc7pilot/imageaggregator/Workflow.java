@@ -42,8 +42,8 @@ public class Workflow {
 				subject.onCompleted();
 				return "ok";
 			}
-			//subject.onNext("Downloading images...");
-			//downloadService.downloadImages(images, outputDirectory);
+			subject.onNext("Downloading images...");
+			downloadService.downloadImages(images, outputDirectory);
 			
 			//Name-processing of the downloaded images
 		    String img1name = images.get(0).getName();
