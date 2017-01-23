@@ -46,8 +46,8 @@ public class Workflow {
 			//downloadService.downloadImages(images, outputDirectory);
 			
 			//Name-processing of the downloaded images
-		    String img1name = "S1A_IW_GRDH_1SSV_20160601T135202_20160601T135227_011518_011929_0EE2";
-		    String img2name = "S1A_IW_GRDH_1SSV_20160905T135207_20160905T135232_012918_0146C0_ECCC";
+		    String img1name = images.get(0).getName();
+		    String img2name = images.get(1).getName();
 			String img1 = img1name + ".zip";
 			String img2 = img2name + ".zip";
 			System.out.println("The first img's filepath is: " + outputDirectory + img1);
