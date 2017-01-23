@@ -97,6 +97,12 @@ public class Workflow {
 			ChangeDetection changeDetection = new RandomTestDetection();
 			List<Change> changes = changeDetection.detectChanges(images, imageData, dbSCANoutputFilepath);
 			
+			//Storing to Strabon through Geotriples
+			System.out.println("Storing results...");
+			List<ChangeStore> changesToStore = changeDetection.detectChangesForStore(images, imageData, dbSCANoutputFilepath);
+			GeotriplesClient client = new GeotriplesClient("http://geotriples","8080");
+			client.saveChanges(changesToStore);
+			
 			// Visualizing Polygons with chnages to Sextant
 			System.out.println("Visualizing results...");
 			ObjectMapper objectMapper = new ObjectMapper();
@@ -105,14 +111,7 @@ public class Workflow {
 			objectMapper.setConfig(objectMapper.getSerializationConfig().withView(Views.Public.class));
 			objectMapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false));
 			String res = objectMapper.writerWithView(Views.Public.class).writeValueAsString(changes);
-			subject.onNext(res);
-			
-			//Storing to Strabon through Geotriples
-//			System.out.println("Storing results...");
-//			List<ChangeStore> changesToStore = changeDetection.detectChangesForStore(images, imageData, dbSCANoutputFilepath);
-//			GeotriplesClient client = new GeotriplesClient("http://geotriples","8080");
-//			client.saveChanges(changesToStore);
-			
+			subject.onNext(res);			
 			subject.onCompleted();
 			return "ok";
 			}
