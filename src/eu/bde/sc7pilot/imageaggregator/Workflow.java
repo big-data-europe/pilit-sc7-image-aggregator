@@ -111,7 +111,7 @@ public class Workflow {
 			System.out.println("Storing results...");
 			List<ChangeStore> changesToStore = changeDetection.detectChangesForStore(images, imageData, dbSCANoutputFilepath);
 			GeotriplesClient client = new GeotriplesClient("http://geotriples","8080");
-			client.saveChanges(changes);
+			client.saveChanges(changesToStore);
 			
 			subject.onCompleted();
 			return "ok";

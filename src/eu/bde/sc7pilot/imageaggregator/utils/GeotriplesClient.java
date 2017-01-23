@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 import eu.bde.sc7pilot.imageaggregator.model.Change;
+import eu.bde.sc7pilot.imageaggregator.model.ChangeStore;
 import eu.bde.sc7pilot.imageaggregator.webconfig.ObjectMapperContextResolver;
 
 public class GeotriplesClient {
@@ -34,7 +35,7 @@ public class GeotriplesClient {
 		this.port = port;
 	}
 	
-	public void saveChanges(List<Change> changes) {		
+	public void saveChanges(List<ChangeStore> changesToStore) {		
 		// No need to register this provider if no special configuration is required.
 		Client client = ClientBuilder.newClient(new ClientConfig()).register(ObjectMapperContextResolver.class).register(JacksonFeature.class);
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -44,7 +45,7 @@ public class GeotriplesClient {
 		
 		// Printing changes to console. I they are more than a few the systems has SEVERE ERROR!!!
 		try {
-			String res = objectMapper.writeValueAsString(changes);
+			String res = objectMapper.writeValueAsString(changesToStore);
 			System.out.println("Sending changes to geotriples: " + res);
 		} 
 		catch (JsonProcessingException e) {
@@ -56,7 +57,7 @@ public class GeotriplesClient {
 		System.out.println("Geotriples URL is: " + uri.toString());
 		WebTarget target = client.target(uri);
 		Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
-		Response response = invocationBuilder.post(Entity.entity(changes, MediaType.APPLICATION_JSON),Response.class);
+		Response response = invocationBuilder.post(Entity.entity(changesToStore, MediaType.APPLICATION_JSON),Response.class);
 		System.out.println("Geotriples' response: " + response.getStatus() + " " + response.readEntity(String.class));
 	}
 
