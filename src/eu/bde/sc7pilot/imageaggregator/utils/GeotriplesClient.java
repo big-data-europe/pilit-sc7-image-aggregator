@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 
-import eu.bde.sc7pilot.imageaggregator.model.Change;
 import eu.bde.sc7pilot.imageaggregator.model.ChangeStore;
 import eu.bde.sc7pilot.imageaggregator.webconfig.ObjectMapperContextResolver;
 
@@ -44,14 +43,14 @@ public class GeotriplesClient {
 		objectMapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false));
 		
 		// Printing changes to console. I they are more than a few the systems has SEVERE ERROR!!!
-		try {
-			String res = objectMapper.writeValueAsString(changesToStore);
-			System.out.println("Sending changes to geotriples: " + res);
-		} 
-		catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			String res = objectMapper.writeValueAsString(changesToStore);
+//			System.out.println("Sending changes to geotriples: " + res);
+//		} 
+//		catch (JsonProcessingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		URI uri = UriBuilder.fromUri(host + ":" + port + "/geotriples/changes").build();
 		System.out.println("Geotriples URL is: " + uri.toString());
