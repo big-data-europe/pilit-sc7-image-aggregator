@@ -18,6 +18,7 @@ import eu.bde.sc7pilot.imageaggregator.changeDetection.RunChangeDetector;
 import eu.bde.sc7pilot.imageaggregator.changeDetection.RunDBscan;
 import eu.bde.sc7pilot.imageaggregator.changeDetection.RunSubset;
 import eu.bde.sc7pilot.imageaggregator.model.Change;
+import eu.bde.sc7pilot.imageaggregator.model.ChangeStore;
 import eu.bde.sc7pilot.imageaggregator.model.Image;
 import eu.bde.sc7pilot.imageaggregator.model.ImageData;
 import eu.bde.sc7pilot.imageaggregator.utils.GeotriplesClient;
@@ -108,6 +109,7 @@ public class Workflow {
 			
 			//Storing to Strabon through Geotriples
 			System.out.println("Storing results...");
+			List<ChangeStore> changesToStore = changeDetection.detectChangesForStore(images, imageData, dbSCANoutputFilepath);
 			GeotriplesClient client = new GeotriplesClient("http://geotriples","8080");
 			client.saveChanges(changes);
 			
