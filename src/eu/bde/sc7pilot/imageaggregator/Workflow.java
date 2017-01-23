@@ -36,7 +36,7 @@ public class Workflow {
 			subject.onNext("Searching for images...");
 			List<Image> images = searchService.searchImages(imageData);
 			
-			if(images.size()<=1)
+			if(images.size() <= 1)
 			{
 				subject.onNext("No images were found for the specified parameters.");
 				subject.onCompleted();
@@ -45,53 +45,50 @@ public class Workflow {
 			//subject.onNext("Downloading images...");
 			//downloadService.downloadImages(images, outputDirectory);
 			
-			//Getting the local filepath's of the downloaded images
-//			String img1 = outputDirectory + images.get(0).getName() + ".zip";
-//			String img2 = outputDirectory + images.get(1).getName() + ".zip";
-			subject.onNext("Already downloaded...");
-			String img1 = "S1A_IW_GRDH_1SSV_20141225T142407_20141225T142436_003877_004A54_040F.zip";
-			String img2 = "S1A_IW_GRDH_1SSV_20150518T142409_20150518T142438_005977_007B49_AF76.zip";
+			//Name-processing of the downloaded images
+//		    String img1name = images.get(0).getName(); // general case
+//		    String img2name = images.get(1).getName(); // general case
+		    String img1name = "S1A_IW_GRDH_1SSV_20141225T142407_20141225T142436_003877_004A54_040F"; // hardcoded case
+		    String img2name = "S1A_IW_GRDH_1SSV_20150518T142409_20150518T142438_005977_007B49_AF76"; // hardcoded case
+			String img1 = img1name + ".zip";
+			String img2 = img2name + ".zip";
 			System.out.println("The first img's filepath is:" + outputDirectory + img1);
 			System.out.println("The second img's filepath is:" + outputDirectory + img2);
 			
 			//Preparing subseting
 			subject.onNext("Performing subseting...");
-//		    String img1name = images.get(0).getName();
-//		    String img2name = images.get(1).getName();
-		    String img1name = "S1A_IW_GRDH_1SSV_20141225T142407_20141225T142436_003877_004A54_040F";
-		    String img2name = "S1A_IW_GRDH_1SSV_20150518T142409_20150518T142438_005977_007B49_AF76";
 			String polygonSelected = imageData.getArea().toString(); //.replace("(", "\\(");
 			//polygonFixed = polygonFixed.replace(")", "\\)");
-			System.out.println("PolygonSelected: " + polygonSelected);
+			System.out.println("Polygon for SubsetOp: " + polygonSelected);
 			//Run Subset operator
-			System.out.println("running Subset operator...");
+			System.out.println("Running Subset operator...");
 			RunSubset subsetOp1 = new RunSubset("/runsubset.sh", outputDirectory, img1, polygonSelected);
-		    //String resultSubsetOp1 = subsetOp1.runSubset();
+		    String resultSubsetOp1 = subsetOp1.runSubset();
 		    RunSubset subsetOp2 = new RunSubset("/runsubset.sh", outputDirectory, img2, polygonSelected);
-		    //String resultSubsetOp2 = subsetOp2.runSubset();
+		    String resultSubsetOp2 = subsetOp2.runSubset();
 		    
 		    //Preparing change-detectioning
-		    subject.onNext("performing Change-Detection...");
+		    System.out.println("performing Change-Detection...");
 			String sub1dim = outputDirectory + "subset_of_" + img1name + ".dim";
 			String sub1tif = outputDirectory + "subset_of_" + img1name + ".tif";
 			String sub2dim = outputDirectory + "subset_of_" + img2name + ".dim";
 			String sub2tif = outputDirectory + "subset_of_" + img2name + ".tif";
 			//Run change detection
 			RunChangeDetector runCD = new RunChangeDetector("/runchangedet.sh", sub1dim, sub1tif, sub2dim, sub2tif);
-	        //String resultCD = runCD.runchangeDetector();
+	        String resultCD = runCD.runchangeDetector();
 			//uncomment the next line to see the output of the shell script
 			//subject.onNext(result.substring(0, 20));
 
 			//Preparing DBScaning
-	        subject.onNext("performing DBScan...");
+	        System.out.println("performing DBScan...");
 		    String img1cod = img1name.substring(img1name.length()-4);//last 4 characters of the image name
 		    String img2cod = img2name.substring(img2name.length()-4);
 			String dbSCANoutput = img1cod + "vs" + img2cod + "coords.txt";
 			//Run DBScan	    
 			RunDBscan runDBS = new RunDBscan("/rundbscan.sh", outputDirectory, "SparkChangeDetResult.dim", dbSCANoutput);
-			//String resultDBS = runDBS.runDBscan();
-			//String dbSCANoutputFilepath = outputDirectory + dbSCANoutput; //general case
-			String dbSCANoutputFilepath = "/snap/0EE2vsECCCcoords.txt";
+			String resultDBS = runDBS.runDBscan();
+			String dbSCANoutputFilepath = outputDirectory + dbSCANoutput; // general case
+//			String dbSCANoutputFilepath = "/snap/0EE2vsECCCcoords.txt"; // hardcoded case
 			
 			// Processing the DBScan's output with polygons defining possible changes
 			ChangeDetection changeDetection = new RandomTestDetection();			
