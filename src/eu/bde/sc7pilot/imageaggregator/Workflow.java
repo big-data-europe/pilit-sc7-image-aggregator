@@ -108,10 +108,10 @@ public class Workflow {
 			subject.onNext(res);
 			
 			//Storing to Strabon through Geotriples
-			System.out.println("Storing results...");
-			List<ChangeStore> changesToStore = changeDetection.detectChangesForStore(images, imageData, dbSCANoutputFilepath);
-			GeotriplesClient client = new GeotriplesClient("http://geotriples","8080");
-			client.saveChanges(changesToStore);
+//			System.out.println("Storing results...");
+//			List<ChangeStore> changesToStore = changeDetection.detectChangesForStore(images, imageData, dbSCANoutputFilepath);
+//			GeotriplesClient client = new GeotriplesClient("http://geotriples","8080");
+//			client.saveChanges(changesToStore);
 			
 			subject.onCompleted();
 			return "ok";
