@@ -94,8 +94,7 @@ public class Workflow {
 			String dbSCANoutputFilepath = "/snap/0EE2vsECCCcoords.txt";
 			
 			// Processing the DBScan's output with polygons defining possible changes
-			ChangeDetection changeDetection = new RandomTestDetection();
-			List<Change> changes = changeDetection.detectChanges(images, imageData, dbSCANoutputFilepath);
+			ChangeDetection changeDetection = new RandomTestDetection();			
 			
 			//Storing to Strabon through Geotriples
 			System.out.println("Storing results...");
@@ -103,7 +102,8 @@ public class Workflow {
 			GeotriplesClient client = new GeotriplesClient("http://geotriples","8080");
 			client.saveChanges(changesToStore);
 			
-			// Visualizing Polygons with chnages to Sextant
+			// Visualizing Polygons with changes to Sextant
+			List<Change> changes = changeDetection.detectChanges(images, imageData, dbSCANoutputFilepath);
 			System.out.println("Visualizing results...");
 			ObjectMapper objectMapper = new ObjectMapper();
 			objectMapper.registerModule(new JodaModule());
