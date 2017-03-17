@@ -62,10 +62,10 @@ public class Workflow {
 			System.out.println("Polygon for SubsetOp: " + polygonSelected);
 			//Run Subset operator
 			//System.out.println("Running Subset operator...");
-			subject.onNext("Performing subseting on 1st image...");
+			subject.onNext("Performing subseting...");
 			RunSubset subsetOp1 = new RunSubset("/runsubset.sh", outputDirectory, img1, polygonSelected);
 		    String resultSubsetOp1 = subsetOp1.runSubset();
-		    subject.onNext("Performing subseting on 2nd image...");
+		    //subject.onNext("Performing subseting on 2nd image...");
 		    RunSubset subsetOp2 = new RunSubset("/runsubset.sh", outputDirectory, img2, polygonSelected);
 		    String resultSubsetOp2 = subsetOp2.runSubset();
 		    
