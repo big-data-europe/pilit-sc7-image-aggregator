@@ -56,19 +56,22 @@ public class Workflow {
 			System.out.println("The second img's filepath is:" + outputDirectory + img2);
 			
 			//Preparing subseting
-			subject.onNext("Performing subseting...");
+			System.out.println("Performing subseting...");
 			String polygonSelected = imageData.getArea().toString(); //.replace("(", "\\(");
 			//polygonFixed = polygonFixed.replace(")", "\\)");
 			System.out.println("Polygon for SubsetOp: " + polygonSelected);
 			//Run Subset operator
-			System.out.println("Running Subset operator...");
+			//System.out.println("Running Subset operator...");
+			subject.onNext("Performing subseting on 1st image...");
 			RunSubset subsetOp1 = new RunSubset("/runsubset.sh", outputDirectory, img1, polygonSelected);
 		    String resultSubsetOp1 = subsetOp1.runSubset();
+		    subject.onNext("Performing subseting on 2nd image...");
 		    RunSubset subsetOp2 = new RunSubset("/runsubset.sh", outputDirectory, img2, polygonSelected);
 		    String resultSubsetOp2 = subsetOp2.runSubset();
 		    
 		    //Preparing change-detectioning
 		    System.out.println("performing Change-Detection...");
+		    subject.onNext("Performing Change-Detection...");
 			String sub1dim = outputDirectory + "subset_of_" + img1name + ".dim";
 			String sub1tif = outputDirectory + "subset_of_" + img1name + ".tif";
 			String sub2dim = outputDirectory + "subset_of_" + img2name + ".dim";
@@ -81,6 +84,7 @@ public class Workflow {
 
 			//Preparing DBScaning
 	        System.out.println("performing DBScan...");
+		    subject.onNext("Performing DBScan...");
 		    String img1cod = img1name.substring(img1name.length()-4);//last 4 characters of the image name
 		    String img2cod = img2name.substring(img2name.length()-4);
 			String dbSCANoutput = img1cod + "vs" + img2cod + "coords.txt";
@@ -95,6 +99,7 @@ public class Workflow {
 			
 			//Storing to Strabon through Geotriples
 			System.out.println("Storing results...");
+		    subject.onNext("Storing results...");
 			List<ChangeStore> changesToStore = changeDetection.detectChangesForStore(images, imageData, dbSCANoutputFilepath);
 			GeotriplesClient client = new GeotriplesClient("http://geotriples","8080");
 			client.saveChanges(changesToStore);
