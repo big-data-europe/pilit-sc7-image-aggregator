@@ -105,7 +105,8 @@ public class Workflow {
 			objectMapper.setConfig(objectMapper.getSerializationConfig().withView(Views.Public.class));
 			objectMapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false));
 			String res = objectMapper.writerWithView(Views.Public.class).writeValueAsString(changes);
-			subject.onNext(res);			
+			subject.onNext(res);	
+			subject.onNext("Session Completed!");
 			subject.onCompleted();
 			return "ok";
 			}

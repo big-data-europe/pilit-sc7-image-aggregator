@@ -1,4 +1,4 @@
-package eu.bde.sc7pilot.imageaggregator.service;
+package eu.bde.sc7pilot.imageaggregator.retrieve;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -23,9 +21,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.glassfish.jersey.media.sse.EventOutput;
-import org.glassfish.jersey.media.sse.OutboundEvent;
-import org.glassfish.jersey.media.sse.SseFeature;
 import org.joda.time.DateTime;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -37,78 +32,75 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
-import eu.bde.sc7pilot.imageaggregator.Workflow;
 import eu.bde.sc7pilot.imageaggregator.model.Area;
-import eu.bde.sc7pilot.imageaggregator.model.ImageData;
-import eu.bde.sc7pilot.imageaggregator.retrieve.Constants;
-import eu.bde.sc7pilot.imageaggregator.retrieve.Event;
-import eu.bde.sc7pilot.imageaggregator.retrieve.RdfStorage;
-import eu.bde.sc7pilot.imageaggregator.retrieve.StrabonEndpoint;
 import eu.bde.sc7pilot.imageaggregator.webconfig.ResponseMessage;
 import eu.bde.sc7pilot.imageaggregator.webconfig.RestTimestampParam;
 
-@Path("/changes")
-public class ImageAggregatorService {
-	@GET
-	@Path("/progress")
-	@Produces(SseFeature.SERVER_SENT_EVENTS)
-	public EventOutput changeDetectionwithProgress(
-			@QueryParam("extent") String extent,
-			@QueryParam("event_date") RestTimestampParam eventDate,
-			@QueryParam("reference_date") RestTimestampParam referenceDate,
-			@QueryParam("polarization") String selectedPolarisations, 
-			@QueryParam("username") String username,
-			@QueryParam("password") String password
-			) throws Exception {
-		final EventOutput eventOutput = new EventOutput();
-		if (extent == null) {
-			handleServerException(eventOutput, "extent should not be null.");
-		}
-		DateTime eventDate2 = null;
-		DateTime referenceDate2 = null;
-		if (eventDate == null)
-			eventDate2 = new DateTime();
-		else
-			eventDate2 = eventDate.getDate();
-		if (referenceDate == null)
-			referenceDate2 = eventDate2.minusDays(10);
-		else
-			referenceDate2 = referenceDate.getDate();
+@Path("/event")
+public class EventProcessService {
 
-		WKTReader wktReader = new WKTReader();
+//	@POST
+//	@Produces(MediaType.APPLICATION_JSON)
+//	@Consumes(MediaType.APPLICATION_JSON)
+//	public Response eventDetected(Event event) {
+//		ResponseMessage respMessage = new ResponseMessage();
+//		ResponseMessage r = new ResponseMessage(200, "event stored successfully");
+//		return Response.status(200).entity(r).build();
+//	}
 
-		ImageData imageData = new ImageData(eventDate2, referenceDate2, null, username, password,
-				new String[] { "ff" });
-		try {
-			Geometry geometry = wktReader.read(extent);
-			imageData.setArea(geometry);
-			Workflow workflow = new Workflow();
-			try {
-				workflow.downloadImages(imageData).subscribe((value) -> {
-					try {
-						notifyProgress(eventOutput, value);
-					} catch (Exception e1) {
-						handleServerException(eventOutput, e1.getMessage());
-					}
-				} , e -> handleServerException(eventOutput, e.getMessage()), () -> {
-					try {
-						if (!eventOutput.isClosed())
-							eventOutput.close();
-					} catch (Exception e1) {
-						Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, e1.getMessage());
-					}
-				});
-			} catch (Exception e) {
-				if (!eventOutput.isClosed())
-					eventOutput.close();
-				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, e.getMessage());
-			}
-		} catch (ParseException e1) {
-			handleServerException(eventOutput, "bounding_box is not a valid WKT polygon");
-		}
-		return eventOutput;
-	}
-	
+//	@POST
+//	@Path("/process")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	@Consumes(MediaType.APPLICATION_JSON)
+//	public void saveEvent(@Suspended final AsyncResponse asyncResponse, Event event) {
+//		new Thread(new Runnable() {
+//			@Override
+//			public void run() {
+//				ResponseMessage respMessage = new ResponseMessage();
+//				if (event == null) {
+//					respMessage.setMessage("request body should not be empty.");
+//					respMessage.setCode(400);
+//					throw new WebApplicationException(
+//							Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(respMessage).build());
+//				}
+//				if (event.getId() == null || event.getId().trim().isEmpty()) {
+//					respMessage.setMessage("event id should not be null or empty.");
+//					respMessage.setCode(400);
+//					throw new WebApplicationException(
+//							Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(respMessage).build());
+//				}
+//				for (Area area : event.getAreas()) {
+//					if (area == null) {
+//						respMessage.setMessage("all areas should have a name and a geometry");
+//						respMessage.setCode(400);
+//						throw new WebApplicationException(
+//								Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(respMessage).build());
+//					}
+//					if ((area.getName().trim().isEmpty()) || (area.getName() == null) || area.getGeometry() == null) {
+//						respMessage.setMessage("all areas should have a name and a geometry");
+//						respMessage.setCode(400);
+//						throw new WebApplicationException(
+//								Response.status(HttpURLConnection.HTTP_BAD_REQUEST).entity(respMessage).build());
+//					}
+//				}
+//				EventProcessingWorkflow eventProcessingWorkflow = new EventProcessingWorkflow();
+//				try {
+//					for (Area a : event.getAreas()) {
+//						a.setId(IdRetrieval.getId(false));
+//					}
+//					boolean result = eventProcessingWorkflow.runWorkflow(event);
+//					respMessage.setMessage("event processed successfully");
+//					respMessage.setCode(200);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//					respMessage.setMessage("internal server error");
+//					respMessage.setCode(500);
+//				}
+//				asyncResponse.resume(Response.status(respMessage.getCode()).entity(respMessage).build());
+//			}
+//		}).start();
+//	}
+
 	@GET
 	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -274,35 +266,5 @@ public class ImageAggregatorService {
 		}
 		System.out.println("objects ok");
 		return Response.status(200).entity(events).build();
-	}
-
-	private void notifyProgress(EventOutput eventOutput, String value) throws IOException {
-		final OutboundEvent.Builder eventBuilder = new OutboundEvent.Builder();
-		eventBuilder.data(String.class, value);
-		final OutboundEvent event = eventBuilder.build();
-		try {
-			eventOutput.write(event);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			if (!eventOutput.isClosed())
-				eventOutput.close();
-		}
-	}
-
-	private void handleServerException(EventOutput eventOutput, String message) {
-		Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, message);
-		final OutboundEvent.Builder eventBuilder = new OutboundEvent.Builder();
-		eventBuilder.data(String.class, message);
-		final OutboundEvent event = eventBuilder.build();
-		try {
-			eventOutput.write(event);
-			if (!eventOutput.isClosed())
-				eventOutput.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-
-		}
 	}
 }
