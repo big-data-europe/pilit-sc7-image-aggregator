@@ -42,12 +42,14 @@ public class Workflow {
 				subject.onCompleted();
 				return "ok";
 			}
-			subject.onNext("Downloading images...");
+		    String img1name = images.get(0).getName();
+		    String img2name = images.get(1).getName();
+		    
+			subject.onNext("{\"message\": \"Downloading Images...\", \"image1\": \"" + img1name + "\", \"image2\" : \"" + img2name + "\"}");
+			System.out.println("{\"message\": \"Downloading Images...\", \"image1\": \"" + img1name + "\", \"image2\" : \"" + img2name + "\"}");
 			downloadService.downloadImages(images, outputDirectory);
 			
 			//Name-processing of the downloaded images
-		    String img1name = images.get(0).getName();
-		    String img2name = images.get(1).getName();
 			String img1 = img1name + ".zip";
 			String img2 = img2name + ".zip";
 			System.out.println("The first img's filepath is: " + outputDirectory + img1);
@@ -67,6 +69,7 @@ public class Workflow {
 		    
 		    //Preparing change-detectioning
 		    System.out.println("performing Change-Detection...");
+		    subject.onNext("Performing Change-Detection...");
 			String sub1dim = outputDirectory + "subset_of_" + img1name + ".dim";
 			String sub1tif = outputDirectory + "subset_of_" + img1name + ".tif";
 			String sub2dim = outputDirectory + "subset_of_" + img2name + ".dim";
@@ -79,6 +82,7 @@ public class Workflow {
 
 			//Preparing DBScaning
 	        System.out.println("performing DBScan...");
+	        subject.onNext("Performing DBScan...");
 		    String img1cod = img1name.substring(img1name.length()-4);//last 4 characters of the image name
 		    String img2cod = img2name.substring(img2name.length()-4);
 			String dbSCANoutput = img1cod + "vs" + img2cod + "coords.txt";
@@ -92,6 +96,7 @@ public class Workflow {
 			
 			//Storing to Strabon through Geotriples
 			System.out.println("Storing results...");
+			subject.onNext("Storing results...");
 			List<ChangeStore> changesToStore = changeDetection.detectChangesForStore(images, imageData, dbSCANoutputFilepath);
 			GeotriplesClient client = new GeotriplesClient("http://geotriples","8080");
 			client.saveChanges(changesToStore);

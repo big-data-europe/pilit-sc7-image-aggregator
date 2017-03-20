@@ -20,16 +20,16 @@ public class DownloadService {
 	}
 	
     public void downloadImages(List<Image> images, String outputDirectory) {
-    	System.out.println("images to download: "+images.size());
+    	System.out.println("images to download: " + images.size());
         DataClient imageService = new DataClient(username, password);
-        for (int i=0;i<images.size();i++) {
-        	Image image=images.get(i);
+        for (int i = 0; i < images.size(); i++) {
+        	Image image = images.get(i);
             String imageName = image.getName();
             try {
-            	double startDownl = System.currentTimeMillis();
+            	long startDownl = System.currentTimeMillis();
                 imageService.downloadAndSaveById(image.getId(), outputDirectory + imageName + ".zip");
-                double endDownl = System.currentTimeMillis();
-                double downlTime = (endDownl - startDownl)/60000;
+                long endDownl = System.currentTimeMillis();
+                long downlTime = (endDownl - startDownl)/60000;
                 System.out.println(downlTime + " mins for Downloading and saving Image No.: " + i);
             }
             catch (Exception e) {
