@@ -50,6 +50,7 @@ public class Workflow {
 //		    String img2name = images.get(1).getName(); // general case
 		    String img1name = "S1A_IW_GRDH_1SSV_20141225T142407_20141225T142436_003877_004A54_040F"; // hardcoded case
 		    String img2name = "S1A_IW_GRDH_1SSV_20150518T142409_20150518T142438_005977_007B49_AF76"; // hardcoded case
+		    subject.onNext("{\"message\": \"Downloading Images...\", \"image1\": \"" + img1name + "\", \"image2\" : \"" + img2name + "\"}");
 			String img1 = img1name + ".zip";
 			String img2 = img2name + ".zip";
 			System.out.println("The first img's filepath is:" + outputDirectory + img1);
