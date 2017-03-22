@@ -36,58 +36,62 @@ public class ImageAggregatorService {
 		new Thread(new Runnable() {
             @Override
             public void run() {
-		if (extent == null) {
-			handleServerException(eventOutput, "extent should not be null.");
-		}
-		DateTime eventDate2 = null;
-		DateTime referenceDate2 = null;
-		if (eventDate == null)
-			eventDate2 = new DateTime();
-		else
-			eventDate2 = eventDate.getDate();
-		if (referenceDate == null)
-			referenceDate2 = eventDate2.minusDays(10);
-		else
-			referenceDate2 = referenceDate.getDate();
-
-		WKTReader wktReader = new WKTReader();
-
-		ImageData imageData = new ImageData(eventDate2, referenceDate2, null, username, password,
-				new String[] { "ff" });
-		try {
-			Geometry geometry = wktReader.read(extent);
-			imageData.setArea(geometry);
-			Workflow workflow = new Workflow();
-			try {
-				workflow.downloadImages(imageData).subscribe((value) -> {
-					try {
-						notifyProgress(eventOutput, value);
-					} catch (Exception e1) {
-						handleServerException(eventOutput, e1.getMessage());
-					}
-				} , e -> handleServerException(eventOutput, e.getMessage()), () -> {
-					try {
-						if (!eventOutput.isClosed())
-							eventOutput.close();
-					} catch (Exception e1) {
-						Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, e1.getMessage());
-					}
-				});
-			} catch (Exception e) {
-				if (!eventOutput.isClosed())
-					try {
-						eventOutput.close();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, e.getMessage());
-			}
-		} catch (ParseException e1) {
-			handleServerException(eventOutput, "bounding_box is not a valid WKT polygon");
-		}
+            	if (extent == null) {
+            		handleServerException(eventOutput, "extent should not be null.");
+            		}
+            	DateTime eventDate2 = null;
+            	DateTime referenceDate2 = null;
+            	if (eventDate == null)
+            		eventDate2 = new DateTime();
+            	else
+            		eventDate2 = eventDate.getDate();
+            	if (referenceDate == null)
+            		referenceDate2 = eventDate2.minusDays(10);
+            	else
+            		referenceDate2 = referenceDate.getDate();
+            	
+            	WKTReader wktReader = new WKTReader();
+            	ImageData imageData = new ImageData(eventDate2, referenceDate2, null, username, password, new String[] { "ff" });
+            	
+            	try {
+            		Geometry geometry = wktReader.read(extent);
+            		imageData.setArea(geometry);
+            		Workflow workflow = new Workflow();
+            		try {
+            			workflow.downloadImages(imageData).subscribe((value) -> {
+            				try {
+            					notifyProgress(eventOutput, value);
+            					}
+            				catch (Exception e1) {
+            					handleServerException(eventOutput, e1.getMessage());
+            					}
+            				} , e -> handleServerException(eventOutput, e.getMessage()), () -> {
+            					try {
+            						if (!eventOutput.isClosed())
+            							eventOutput.close();
+            						}
+            					catch (Exception e1) {
+            						Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, e1.getMessage());
+            						}
+            					});
+            			}
+            		catch (Exception e) {
+            			if (!eventOutput.isClosed())
+            				try {
+            					eventOutput.close();
+            					} 
+            				catch (IOException e1) {
+            					// TODO Auto-generated catch block
+            					e1.printStackTrace();
+            				}
+            			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, e.getMessage());
+            		}
+            	}
+            	catch (ParseException e1) {
+            		handleServerException(eventOutput, "bounding_box is not a valid WKT polygon");
+            	}
             }
-		}).start();
+        }).start();
 		
 		return eventOutput;
 	}
@@ -109,7 +113,7 @@ public class ImageAggregatorService {
 	private void handleServerException(EventOutput eventOutput, String message) {
 		Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, message);
 		final OutboundEvent.Builder eventBuilder = new OutboundEvent.Builder();
-		eventBuilder.data(String.class, message);
+		eventBuilder.data(String.class, "Error message: " + message);
 		final OutboundEvent event = eventBuilder.build();
 		try {
 			eventOutput.write(event);
