@@ -33,6 +33,9 @@ public class ImageAggregatorService {
 			@QueryParam("polarization") String selectedPolarisations, @QueryParam("username") String username,
 			@QueryParam("password") String password) throws Exception {
 		final EventOutput eventOutput = new EventOutput();
+		new Thread(new Runnable() {
+            @Override
+            public void run() {
 		if (extent == null) {
 			handleServerException(eventOutput, "extent should not be null.");
 		}
@@ -72,12 +75,20 @@ public class ImageAggregatorService {
 				});
 			} catch (Exception e) {
 				if (!eventOutput.isClosed())
-					eventOutput.close();
+					try {
+						eventOutput.close();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, e.getMessage());
 			}
 		} catch (ParseException e1) {
 			handleServerException(eventOutput, "bounding_box is not a valid WKT polygon");
 		}
+            }
+		}).start();
+		
 		return eventOutput;
 	}
 
