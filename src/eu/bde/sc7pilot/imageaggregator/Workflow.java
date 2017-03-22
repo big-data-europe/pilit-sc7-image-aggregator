@@ -45,8 +45,8 @@ public class Workflow {
 		    String img1name = images.get(0).getName();
 		    String img2name = images.get(1).getName();
 		    
-			subject.onNext("{\"message\": \"Downloading Images...\", \"image1\": \"" + img1name + "\", \"image2\" : \"" + img2name + "\"}");
-			System.out.println("{\"message\": \"Downloading Images...\", \"image1\": \"" + img1name + "\", \"image2\" : \"" + img2name + "\"}");
+		    subject.onNext("Downloading images...@@@" + img1name + "@@@" + img2name);
+			System.out.println("Downloading images...@@@" + img1name + "@@@" + img2name);
 			downloadService.downloadImages(images, outputDirectory);
 			
 			//Name-processing of the downloaded images
@@ -81,7 +81,7 @@ public class Workflow {
 			//subject.onNext(result.substring(0, 20));
 
 			//Preparing DBScaning
-	        System.out.println("performing DBScan...");
+	        System.out.println("Performing DBScan...");
 	        subject.onNext("Performing DBScan...");
 		    String img1cod = img1name.substring(img1name.length()-4);//last 4 characters of the image name
 		    String img2cod = img2name.substring(img2name.length()-4);
