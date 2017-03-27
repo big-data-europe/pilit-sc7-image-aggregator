@@ -117,12 +117,12 @@
 			<type>jar</type>
 		</dependency>
 		<!-- EXTRA DEPENDENCIES -->
-		<dependency>
+		<!-- dependency>
 			<groupId>eu.earthobservatory</groupId>
 			<artifactId>strabon-endpoint-client</artifactId>
 			<version>3.3.1</version>
 			<scope>compile</scope>
-		</dependency>
+		</dependency -->
 		
 	</dependencies>
 	<properties>
