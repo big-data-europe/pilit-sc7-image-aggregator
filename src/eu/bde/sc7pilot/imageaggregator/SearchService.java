@@ -37,6 +37,7 @@ public class SearchService {
                 .createQuery();
         System.out.println("QUERY TO SCIHUB:");
         System.out.println(query.toString());
+        System.out.println("END OF QUERY\n");
 
         List<Image> productsToSearch = new ArrayList<Image>();
         Comparator dateTimeComparator = DateTimeComparator.getInstance().reversed();
