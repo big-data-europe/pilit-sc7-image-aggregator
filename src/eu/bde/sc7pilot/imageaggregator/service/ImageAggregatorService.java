@@ -28,17 +28,19 @@ public class ImageAggregatorService {
 	@Path("/progress")
 	@Produces(SseFeature.SERVER_SENT_EVENTS)
 	public EventOutput changeDetectionwithProgress(@QueryParam("extent") String extent,
-			@QueryParam("event_date") RestTimestampParam eventDate,
-			@QueryParam("reference_date") RestTimestampParam referenceDate,
-			@QueryParam("polarization") String selectedPolarisations, @QueryParam("username") String username,
-			@QueryParam("password") String password) throws Exception {
+												   @QueryParam("event_date") RestTimestampParam eventDate,
+												   @QueryParam("reference_date") RestTimestampParam referenceDate,
+												   @QueryParam("polarization") String selectedPolarisations,
+												   @QueryParam("username") String username,
+												   @QueryParam("password") String password) throws Exception {
+		
 		final EventOutput eventOutput = new EventOutput();
 		new Thread(new Runnable() {
             @Override
             public void run() {
             	if (extent == null) {
             		handleServerException(eventOutput, "extent should not be null.");
-            		}
+            	}
             	DateTime eventDate2 = null;
             	DateTime referenceDate2 = null;
             	if (eventDate == null)

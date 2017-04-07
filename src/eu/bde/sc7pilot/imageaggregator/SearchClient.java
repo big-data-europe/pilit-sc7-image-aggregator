@@ -77,7 +77,7 @@ public class SearchClient {
      
     public List<Image> search(String query, int startIndex, int endIndex) {
         HttpResponse response = getResponse(query, startIndex, endIndex);
-        if(response.getStatusLine().getStatusCode()==401)
+        if(response.getStatusLine().getStatusCode() == 401)
         	throw new NotAuthorizedException(response);
         return parseResponse(response);
     }

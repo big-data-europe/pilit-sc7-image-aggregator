@@ -127,7 +127,7 @@ public class Workflow {
 	
 	public Observable<String> downloadImages(ImageData imageData) throws Exception {
 		final ReplaySubject<String> subject = ReplaySubject.create();
-		detectChangesAsync(imageData,subject).handle((ok, ex) -> {
+		detectChangesAsync(imageData, subject).handle((ok, ex) -> {
 			if (ok != null) {
 				return ok;
 				}
@@ -138,8 +138,8 @@ public class Workflow {
 		return subject;
 		}
 	
-	private CompletableFuture<String> detectChangesAsync(ImageData imageData,ReplaySubject<String> subject) {
+	private CompletableFuture<String> detectChangesAsync(ImageData imageData, ReplaySubject<String> subject) {
 		ExecutorService executor = Executors.newFixedThreadPool(1);
-		return CompletableFuture.supplyAsync(()->runWorkflow(imageData,subject),executor);
+		return CompletableFuture.supplyAsync(()->runWorkflow(imageData,subject), executor);
 		}
 	}

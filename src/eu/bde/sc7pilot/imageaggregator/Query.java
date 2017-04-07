@@ -15,7 +15,14 @@ public class Query {
     private String fromBeginPosition;
     private String toBeginPosition;
 
-    public Query(String footPrint, String productType, String polarisationMode, String platformName, String orbit, String fromBeginPosition, String toBeginPosition) {
+    public Query(String footPrint,
+    		     String productType,
+    		     String polarisationMode,
+    		     String platformName,
+    		     String orbit,
+    		     String fromBeginPosition,
+    		     String toBeginPosition) {
+    	
         this.footPrint = footPrint;
         this.productType = productType;
         this.polarisationMode = polarisationMode;

@@ -17,7 +17,7 @@ import eu.bde.sc7pilot.imageaggregator.model.ImageData;
 
 public class SearchService {
 
-    private final static int MAX_NO_OF_IMAGES = 2;
+    private final static int MAX_NO_OF_IMAGES = 10;
     private String username;
     private String password;
 
@@ -35,6 +35,7 @@ public class SearchService {
                 .setToBeginPosition(imageData.getTargetDate().toDateTime(DateTimeZone.UTC).toString())
                 .setFromBeginPosition(imageData.getReferenceDate().toDateTime(DateTimeZone.UTC).toString())
                 .createQuery();
+        System.out.println("QUERY TO SCIHUB:");
         System.out.println(query.toString());
 
         List<Image> productsToSearch = new ArrayList<Image>();
