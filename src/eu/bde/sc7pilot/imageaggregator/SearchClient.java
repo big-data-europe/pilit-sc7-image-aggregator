@@ -43,7 +43,9 @@ public class SearchClient {
             builder.setParameter(PARAMETER_QUERY, query);
             builder.setParameter(PARAMETER_ROWS, String.valueOf(endIndex));
             builder.setParameter(PARAMETER_START, String.valueOf(startIndex));
+            System.out.println("BUILDER-URI:");
             System.out.println(builder.build());
+            System.out.println("END OF BUILDER-URI\n");
             HttpGet request = new HttpGet(builder.build());
             
             return httpClient.execute(request);
@@ -77,6 +79,9 @@ public class SearchClient {
      
     public List<Image> search(String query, int startIndex, int endIndex) {
         HttpResponse response = getResponse(query, startIndex, endIndex);
+        System.out.println("RESPONSE:");
+        System.out.println(response.toString());
+        System.out.println("END OF RESPONSE:\n");
         if(response.getStatusLine().getStatusCode() == 401)
         	throw new NotAuthorizedException(response);
         return parseResponse(response);

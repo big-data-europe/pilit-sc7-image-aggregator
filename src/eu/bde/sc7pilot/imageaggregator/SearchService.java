@@ -17,7 +17,7 @@ import eu.bde.sc7pilot.imageaggregator.model.ImageData;
 
 public class SearchService {
 
-    private final static int MAX_NO_OF_IMAGES = 10;
+    private final static int MAX_NO_OF_IMAGES = 4;
     private String username;
     private String password;
 
@@ -45,6 +45,9 @@ public class SearchService {
             // search for the first MAX_NO_OF_IMAGES images that match the query
             SearchClient sClient = new SearchClient(username, password);
             productsToSearch = sClient.search(query.toString(), 0, MAX_NO_OF_IMAGES);
+            System.out.println("PRODUCTS:");
+            System.out.println(productsToSearch.toString());
+            System.out.println("END OF PRODUCTS:");
             Collections.sort(productsToSearch, (d1, d2) -> dateTimeComparator.compare(d1.getDate(), d2.getDate()));
 
         } catch (Exception e) {
