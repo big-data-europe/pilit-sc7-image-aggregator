@@ -132,7 +132,9 @@ public class Query {
             //query += (!first?" AND ":"")+" beginPosition:"+"[2016-03-01T07:21:20.892Z TO 2016-03-01T07:21:20.892Z]";
             first = false;
         }
+        System.out.println("QUERY TO SCIHUB:");
         System.out.println(query);
+        System.out.println("END OF QUERY\n");
         return query; //To change body of generated methods, choose Tools | Templates.
     }
 
