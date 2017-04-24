@@ -30,25 +30,11 @@ public class SearchService {
     }
 
     public List<Image> searchImages(ImageData imageData) throws Exception {
-        WKTReader wktReader = new WKTReader();
-        WKTWriter wktWriter = new WKTWriter();
-        DateTime refDateStart = imageData.getReferenceDate().minusDays(DAYS_WINDOW);
-        DateTime refDateEnd = imageData.getReferenceDate().plusDays(DAYS_WINDOW);
-        Query query1 = new QueryBuilder().setFootPrint("Intersects(" + wktWriter.write(imageData.getArea()) + ")")
-                .setProductType("GRD").setPlatformName("Sentinel-1")
-                .setFromBeginPosition(refDateStart.toString())
-                .setToBeginPosition(refDateEnd.toDateTime(DateTimeZone.UTC).toString())
-                .setFromBeginPosition(refDateStart.toDateTime(DateTimeZone.UTC).toString())
-                .createQuery();
-        
-        DateTime eventDateStart = imageData.getTargetDate().minusDays(DAYS_WINDOW);
-        DateTime eventDateEnd = imageData.getTargetDate().plusDays(DAYS_WINDOW);
-        Query query2 = new QueryBuilder().setFootPrint("Intersects(" + wktWriter.write(imageData.getArea()) + ")")
-                .setProductType("GRD").setPlatformName("Sentinel-1")
-                .setFromBeginPosition(eventDateStart.toString())
-                .setToBeginPosition(eventDateEnd.toDateTime(DateTimeZone.UTC).toString())
-                .setFromBeginPosition(eventDateStart.toDateTime(DateTimeZone.UTC).toString())
-                .createQuery();
+        DateTime refDate = imageData.getReferenceDate();
+        DateTime targetDate = imageData.getTargetDate();
+        Geometry area = imageData.getArea();
+        Query query1 = queryMaker(area, refDate);
+        Query query2 = queryMaker(area, targetDate);
 
         List<Image> productsToSearch = new ArrayList<Image>();
         List<Image> refProductsToSearch = new ArrayList<Image>();
@@ -71,14 +57,16 @@ public class SearchService {
         TreeMap<Double, Image> imagesAreas = new TreeMap<Double, Image>();
         List<Image> productsToDowload = new ArrayList<Image>();
         Image targetImage;
+        WKTReader wktReader = new WKTReader();
         if (productsToSearch.size() > 1) {
             Geometry targetGeometry;
             targetImage = productsToSearch.get(0);
             try {
                 targetGeometry = wktReader.read(targetImage.getFootPrint());
                 targetImage = productsToSearch.get(0);
-                System.out.println("IMAGE1-DATE: " + productsToSearch.get(0).getDate());
+                System.out.println("\nIMAGE1-DATE: " + productsToSearch.get(0).getDate());
                 System.out.println("IMAGE2-DATE: " + productsToSearch.get(1).getDate());
+                System.out.println("");
                 for (int i = 1; i < productsToSearch.size(); i++) {
                     Geometry geometry = wktReader.read(productsToSearch.get(i).getFootPrint());
                     imagesAreas.put(targetGeometry.intersection(geometry).getArea(), productsToSearch.get(i));
@@ -93,4 +81,18 @@ public class SearchService {
         }
         return productsToDowload;
     }
+    
+    public Query queryMaker(Geometry area, DateTime dateTime) {
+        WKTWriter wktWriter = new WKTWriter();
+        DateTime DateStart = dateTime.minusDays(DAYS_WINDOW);
+        DateTime DateEnd = dateTime.plusDays(DAYS_WINDOW);
+        Query query = new QueryBuilder().setFootPrint("Intersects(" + wktWriter.write(area) + ")")
+                .setProductType("GRD").setPlatformName("Sentinel-1")
+                .setFromBeginPosition(DateStart.toString())
+                .setToBeginPosition(DateEnd.toDateTime(DateTimeZone.UTC).toString())
+                .setFromBeginPosition(DateStart.toDateTime(DateTimeZone.UTC).toString())
+                .createQuery();
+        return query;
+    }
+    
 }
