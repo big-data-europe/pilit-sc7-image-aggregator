@@ -48,9 +48,13 @@ public class Workflow {
 			//Name-processing of the downloaded images
 //		    String img1name = images.get(0).getName(); // general case
 //		    String img2name = images.get(1).getName(); // general case
-		    String img1name = "S1A_IW_GRDH_1SSV_20141225T142407_20141225T142436_003877_004A54_040F"; // hardcoded case
-		    String img2name = "S1A_IW_GRDH_1SSV_20150518T142409_20150518T142438_005977_007B49_AF76"; // hardcoded case
+		    String img1name = "S1A_IW_GRDH_1SDV_20160129T153207_20160129T153232_009711_00E2D2_2F5A"; // hardcoded case
+		    String img2name = "S1A_IW_GRDH_1SDV_20161031T153214_20161031T153239_013736_0160B3_82A5"; // hardcoded case
 		    subject.onNext("Downloading images...@@@" + img1name + "@@@" + img2name);
+		    System.out.println("Going to sleep for 20secs");	// hardcoded WEBINAR
+			Thread.sleep(20000);								// hardcoded WEBINAR
+			System.out.println("I AM AWAKE!");					// hardcoded WEBINAR
+
 			String img1 = img1name + ".zip";
 			String img2 = img2name + ".zip";
 			System.out.println("The first img's filepath is:" + outputDirectory + img1);
@@ -64,36 +68,48 @@ public class Workflow {
 			//Run Subset operator
 			//System.out.println("Running Subset operator...");
 			subject.onNext("Performing subseting...");
-			RunSubset subsetOp1 = new RunSubset("/runsubset.sh", outputDirectory, img1, polygonSelected);
-		    String resultSubsetOp1 = subsetOp1.runSubset();
+		    System.out.println("Going to sleep for 10secs");
+			Thread.sleep(10000);
+			System.out.println("I AM AWAKE!");
+
+//			RunSubset subsetOp1 = new RunSubset("/runsubset.sh", outputDirectory, img1, polygonSelected);	// hardcoded WEBINAR
+//		    String resultSubsetOp1 = subsetOp1.runSubset();													// hardcoded WEBINAR
 		    //subject.onNext("Performing subseting on 2nd image...");
-		    RunSubset subsetOp2 = new RunSubset("/runsubset.sh", outputDirectory, img2, polygonSelected);
-		    String resultSubsetOp2 = subsetOp2.runSubset();
+//		    RunSubset subsetOp2 = new RunSubset("/runsubset.sh", outputDirectory, img2, polygonSelected);	// hardcoded WEBINAR
+//		    String resultSubsetOp2 = subsetOp2.runSubset();													// hardcoded WEBINAR
 		    
 		    //Preparing change-detectioning
 		    System.out.println("performing Change-Detection...");
 		    subject.onNext("Performing Change-Detection...");
+		    System.out.println("Going to sleep for 10secs");	// hardcoded WEBINAR
+			Thread.sleep(10000);								// hardcoded WEBINAR
+			System.out.println("I AM AWAKE!");					// hardcoded WEBINAR
+
 			String sub1dim = outputDirectory + "subset_of_" + img1name + ".dim";
 			String sub1tif = outputDirectory + "subset_of_" + img1name + ".tif";
 			String sub2dim = outputDirectory + "subset_of_" + img2name + ".dim";
 			String sub2tif = outputDirectory + "subset_of_" + img2name + ".tif";
 			//Run change detection
-			RunChangeDetector runCD = new RunChangeDetector("/runchangedet.sh", sub1dim, sub1tif, sub2dim, sub2tif);
-	        String resultCD = runCD.runchangeDetector();
+//			RunChangeDetector runCD = new RunChangeDetector("/runchangedet.sh", sub1dim, sub1tif, sub2dim, sub2tif);	// hardcoded WEBINAR
+//	        String resultCD = runCD.runchangeDetector();																// hardcoded WEBINAR
 			//uncomment the next line to see the output of the shell script
 			//subject.onNext(result.substring(0, 20));
 
 			//Preparing DBScaning
 	        System.out.println("performing DBScan...");
 		    subject.onNext("Performing DBScan...");
+		    System.out.println("Going to sleep for 10secs");	// hardcoded WEBINAR
+			Thread.sleep(10000);								// hardcoded WEBINAR
+			System.out.println("I AM AWAKE!");					// hardcoded WEBINAR
+
 		    String img1cod = img1name.substring(img1name.length()-4);//last 4 characters of the image name
 		    String img2cod = img2name.substring(img2name.length()-4);
 			String dbSCANoutput = img1cod + "vs" + img2cod + "coords.txt";
 			//Run DBScan	    
-			RunDBscan runDBS = new RunDBscan("/rundbscan.sh", outputDirectory, "SparkChangeDetResult.dim", dbSCANoutput);
-			String resultDBS = runDBS.runDBscan();
-			String dbSCANoutputFilepath = outputDirectory + dbSCANoutput; // general case
-//			String dbSCANoutputFilepath = "/snap/0EE2vsECCCcoords.txt"; // hardcoded case
+//			RunDBscan runDBS = new RunDBscan("/rundbscan.sh", outputDirectory, "SparkChangeDetResult.dim", dbSCANoutput);	// hardcoded WEBINAR
+//			String resultDBS = runDBS.runDBscan();																			// hardcoded WEBINAR
+//			String dbSCANoutputFilepath = outputDirectory + dbSCANoutput; // general case	// hardcoded WEBINAR
+			String dbSCANoutputFilepath = "/snap/2F5Avs82A5coords.txt"; // hardcoded case	// hardcoded WEBINAR
 			
 			// Processing the DBScan's output with polygons defining possible changes
 			ChangeDetection changeDetection = new RandomTestDetection();			
@@ -101,6 +117,10 @@ public class Workflow {
 			//Storing to Strabon through Geotriples
 			System.out.println("Storing results...");
 		    subject.onNext("Storing results...");
+		    System.out.println("Going to sleep for 3secs");		// hardcoded WEBINAR
+			Thread.sleep(3000);									// hardcoded WEBINAR
+			System.out.println("I AM AWAKE!");					// hardcoded WEBINAR
+
 			List<ChangeStore> changesToStore = changeDetection.detectChangesForStore(images, imageData, dbSCANoutputFilepath);
 			GeotriplesClient client = new GeotriplesClient("http://geotriples","8080");
 			client.saveChanges(changesToStore);
