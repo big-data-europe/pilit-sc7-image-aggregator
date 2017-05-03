@@ -35,6 +35,9 @@ public class Workflow {
 			DownloadService downloadService = new DownloadService(imageData.getUsername(),imageData.getPassword());
 			subject.onNext("Searching for images...");
 			List<Image> images = searchService.searchImages(imageData);
+		    System.out.println("Going to sleep for 5 secs");	// hardcoded WEBINAR
+			Thread.sleep(5000);								// hardcoded WEBINAR
+			System.out.println("I AM AWAKE!");					// hardcoded WEBINAR
 			
 			if(images.size() <= 1)
 			{
@@ -51,9 +54,9 @@ public class Workflow {
 		    String img1name = "S1A_IW_GRDH_1SDV_20160129T153207_20160129T153232_009711_00E2D2_2F5A"; // hardcoded case
 		    String img2name = "S1A_IW_GRDH_1SDV_20161031T153214_20161031T153239_013736_0160B3_82A5"; // hardcoded case
 		    subject.onNext("Downloading images...@@@" + img1name + "@@@" + img2name);
-//		    System.out.println("Going to sleep for 20secs");	// hardcoded WEBINAR
-//			Thread.sleep(20000);								// hardcoded WEBINAR
-//			System.out.println("I AM AWAKE!");					// hardcoded WEBINAR
+		    System.out.println("Going to sleep for 10secs");	// hardcoded WEBINAR
+			Thread.sleep(10000);								// hardcoded WEBINAR
+			System.out.println("I AM AWAKE!");					// hardcoded WEBINAR
 
 			String img1 = img1name + ".zip";
 			String img2 = img2name + ".zip";
