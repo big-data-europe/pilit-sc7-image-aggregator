@@ -35,9 +35,6 @@ public class Workflow {
 			DownloadService downloadService = new DownloadService(imageData.getUsername(),imageData.getPassword());
 			subject.onNext("Searching for images...");
 			List<Image> images = searchService.searchImages(imageData);
-		    System.out.println("Going to sleep for 5 secs");	// hardcoded WEBINAR
-			Thread.sleep(5000);								// hardcoded WEBINAR
-			System.out.println("I AM AWAKE!");					// hardcoded WEBINAR
 			
 			if(images.size() <= 1)
 			{
@@ -51,11 +48,15 @@ public class Workflow {
 			//Name-processing of the downloaded images
 //		    String img1name = images.get(0).getName(); // general case
 //		    String img2name = images.get(1).getName(); // general case
+		    System.out.println("Going to sleep for 5 secs");	// hardcoded WEBINAR
+			Thread.sleep(5000);								// hardcoded WEBINAR
+			System.out.println("I AM AWAKE!");					// hardcoded WEBINAR
+			
 		    String img1name = "S1A_IW_GRDH_1SDV_20160129T153207_20160129T153232_009711_00E2D2_2F5A"; // hardcoded case
-		    String img2name = "S1A_IW_GRDH_1SDV_20161031T153214_20161031T153239_013736_0160B3_82A5"; // hardcoded case
+		    String img2name = "S1A_IW_GRDH_1SDV_20161206T153213_20161206T153238_014261_01710D_C785"; // hardcoded case
 		    subject.onNext("Downloading images...@@@" + img1name + "@@@" + img2name);
-		    System.out.println("Going to sleep for 10secs");	// hardcoded WEBINAR
-			Thread.sleep(10000);								// hardcoded WEBINAR
+		    System.out.println("Going to sleep for 20secs");	// hardcoded WEBINAR
+			Thread.sleep(20000);								// hardcoded WEBINAR
 			System.out.println("I AM AWAKE!");					// hardcoded WEBINAR
 
 			String img1 = img1name + ".zip";
@@ -71,8 +72,8 @@ public class Workflow {
 			//Run Subset operator
 			//System.out.println("Running Subset operator...");
 			subject.onNext("Performing subseting...");
-		    System.out.println("Going to sleep for 10secs");
-			Thread.sleep(10000);
+		    System.out.println("Going to sleep for 5 secs");
+			Thread.sleep(5000);
 			System.out.println("I AM AWAKE!");
 
 //			RunSubset subsetOp1 = new RunSubset("/runsubset.sh", outputDirectory, img1, polygonSelected);	// hardcoded WEBINAR
@@ -84,8 +85,8 @@ public class Workflow {
 		    //Preparing change-detectioning
 		    System.out.println("performing Change-Detection...");
 		    subject.onNext("Performing Change-Detection...");
-		    System.out.println("Going to sleep for 10secs");	// hardcoded WEBINAR
-			Thread.sleep(10000);								// hardcoded WEBINAR
+		    System.out.println("Going to sleep for 12 secs");	// hardcoded WEBINAR
+			Thread.sleep(12000);								// hardcoded WEBINAR
 			System.out.println("I AM AWAKE!");					// hardcoded WEBINAR
 
 			String sub1dim = outputDirectory + "subset_of_" + img1name + ".dim";
@@ -101,8 +102,8 @@ public class Workflow {
 			//Preparing DBScaning
 	        System.out.println("performing DBScan...");
 		    subject.onNext("Performing DBScan...");
-		    System.out.println("Going to sleep for 10secs");	// hardcoded WEBINAR
-			Thread.sleep(10000);								// hardcoded WEBINAR
+		    System.out.println("Going to sleep for 8 secs");	// hardcoded WEBINAR
+			Thread.sleep(8000);								// hardcoded WEBINAR
 			System.out.println("I AM AWAKE!");					// hardcoded WEBINAR
 
 		    String img1cod = img1name.substring(img1name.length()-4);//last 4 characters of the image name
