@@ -52,23 +52,23 @@ public class Workflow {
 			//Name-processing of the downloaded images
 			String img1 = img1name + ".zip";
 			String img2 = img2name + ".zip";
-			System.out.println("The first img's filepath is: " + outputDirectory + img1);
+			System.out.println("\nThe first img's filepath is: " + outputDirectory + img1);
 			System.out.println("The second img's filepath is: " + outputDirectory + img2);
 			
 			//Preparing subseting
 			subject.onNext("Performing subseting...");
 			String polygonSelected = imageData.getArea().toString(); //.replace("(", "\\(");
 			//polygonFixed = polygonFixed.replace(")", "\\)");
-			System.out.println("Polygon for SubsetOp: " + polygonSelected);
+			System.out.println("User's selected polygon is: " + polygonSelected);
 			//Run Subset operator
-			System.out.println("Running Subset operator...");
+			System.out.println("\n\n\tRunning Subset operator 2 times for the 2 images.");
 			RunSubset subsetOp1 = new RunSubset("/runsubset.sh", outputDirectory, img1, polygonSelected);
 		    String resultSubsetOp1 = subsetOp1.runSubset();
 		    RunSubset subsetOp2 = new RunSubset("/runsubset.sh", outputDirectory, img2, polygonSelected);
 		    String resultSubsetOp2 = subsetOp2.runSubset();
 		    
 		    //Preparing change-detectioning
-		    System.out.println("performing Change-Detection...");
+		    System.out.println("\n\n\tPerforming Change-Detection.");
 		    subject.onNext("Performing Change-Detection...");
 			String sub1dim = outputDirectory + "subset_of_" + img1name + ".dim";
 			String sub1tif = outputDirectory + "subset_of_" + img1name + ".tif";
@@ -81,7 +81,7 @@ public class Workflow {
 			//subject.onNext(result.substring(0, 20));
 
 			//Preparing DBScaning
-	        System.out.println("Performing DBScan...");
+	        System.out.println("\n\n\tPerforming DBScan.");
 	        subject.onNext("Performing DBScan...");
 		    String img1cod = img1name.substring(img1name.length()-4);//last 4 characters of the image name
 		    String img2cod = img2name.substring(img2name.length()-4);
@@ -95,7 +95,7 @@ public class Workflow {
 			ChangeDetection changeDetection = new RandomTestDetection();
 			
 			//Storing to Strabon through Geotriples
-			System.out.println("Storing results...");
+			System.out.println("\n\tStoring results...");
 			subject.onNext("Storing results...");
 			List<ChangeStore> changesToStore = changeDetection.detectChangesForStore(images, imageData, dbSCANoutputFilepath);
 			GeotriplesClient client = new GeotriplesClient("http://geotriples","8080");
@@ -103,7 +103,7 @@ public class Workflow {
 
 			// Visualizing Polygons with changes to Sextant			
 			List<Change> changes = changeDetection.detectChanges(images, imageData, dbSCANoutputFilepath);
-			System.out.println("Visualizing results...");
+			System.out.println("\n\tVisualizing results...");
 			ObjectMapper objectMapper = new ObjectMapper();
 			objectMapper.registerModule(new JodaModule());
 			objectMapper.registerModule(new JtsModule());			
@@ -113,6 +113,7 @@ public class Workflow {
 			subject.onNext(res);	
 			subject.onNext("Session Completed!");
 			subject.onCompleted();
+			System.out.println("\n\tSession Completed!");
 			return "ok";
 			}
 		catch (NotAuthorizedException e) {

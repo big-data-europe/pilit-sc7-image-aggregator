@@ -20,7 +20,6 @@ public class DownloadService {
 	}
 	
     public void downloadImages(List<Image> images, String outputDirectory) {
-    	System.out.println("images to download: " + images.size());
         DataClient imageService = new DataClient(username, password);
         for (int i = 0; i < images.size(); i++) {
         	Image image = images.get(i);
