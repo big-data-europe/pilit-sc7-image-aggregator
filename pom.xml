@@ -116,6 +116,11 @@
 			<version>2.0.1</version>
 			<type>jar</type>
 		</dependency>
+		<dependency>
+    		<groupId>commons-io</groupId>
+    		<artifactId>commons-io</artifactId>
+    		<version>2.6</version>
+		</dependency>
 		<!-- EXTRA DEPENDENCIES -->
 		<!-- dependency>
 			<groupId>eu.earthobservatory</groupId>

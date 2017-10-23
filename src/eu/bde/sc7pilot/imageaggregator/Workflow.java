@@ -1,11 +1,15 @@
 package eu.bde.sc7pilot.imageaggregator;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.ws.rs.NotAuthorizedException;
+
+import org.apache.commons.io.FileUtils;
 
 import com.bedatadriven.jackson.datatype.jts.JtsModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +26,7 @@ import eu.bde.sc7pilot.imageaggregator.model.ChangeStore;
 import eu.bde.sc7pilot.imageaggregator.model.Image;
 import eu.bde.sc7pilot.imageaggregator.model.ImageData;
 import eu.bde.sc7pilot.imageaggregator.utils.GeotriplesClient;
+import eu.bde.sc7pilot.imageaggregator.utils.Sentinel1ImagesHandler;
 import eu.bde.sc7pilot.imageaggregator.utils.Views;
 import rx.Observable;
 import rx.subjects.ReplaySubject;
@@ -52,8 +57,24 @@ public class Workflow {
 			//Name-processing of the downloaded images
 			String img1 = img1name + ".zip";
 			String img2 = img2name + ".zip";
+		    String img1cod = img1name.substring(img1name.length()-4);//last 4 characters of the image name
+		    String img2cod = img2name.substring(img2name.length()-4);
 			System.out.println("\nThe first img's filepath is: " + outputDirectory + img1);
 			System.out.println("The second img's filepath is: " + outputDirectory + img2);
+
+			
+			//Handling the downloaded images
+			Sentinel1ImagesHandler img1Handler = new Sentinel1ImagesHandler(img1);
+			Sentinel1ImagesHandler img2Handler = new Sentinel1ImagesHandler(img2);
+			String qlook1 = img1Handler.findQuickLook();
+			String qlook2 = img2Handler.findQuickLook();
+			File qlook1File = new File(qlook1);
+			File qlook2File = new File(qlook2);
+			File qlook1FileDest = new File(outputDirectory + img1cod + "qlook.png");
+			File qlook2FileDest = new File(outputDirectory + img2cod + "qlook.png");
+			FileUtils.copyFile(qlook1File, qlook1FileDest);
+			FileUtils.copyFile(qlook2File, qlook2FileDest);
+			
 			
 			//Preparing subseting
 			subject.onNext("Performing subseting...");
@@ -83,8 +104,6 @@ public class Workflow {
 			//Preparing DBScaning
 	        System.out.println("\n\n\tPerforming DBScan.");
 	        subject.onNext("Performing DBScan...");
-		    String img1cod = img1name.substring(img1name.length()-4);//last 4 characters of the image name
-		    String img2cod = img2name.substring(img2name.length()-4);
 			String dbSCANoutput = img1cod + "vs" + img2cod + "coords.txt";
 			//Run DBScan	    
 			RunDBscan runDBS = new RunDBscan("/rundbscan.sh", outputDirectory, "SparkChangeDetResult.dim", dbSCANoutput);
@@ -110,10 +129,35 @@ public class Workflow {
 			objectMapper.setConfig(objectMapper.getSerializationConfig().withView(Views.Public.class));
 			objectMapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false));
 			String res = objectMapper.writerWithView(Views.Public.class).writeValueAsString(changes);
+			//Create .json and return json. qlook1FileDest qlook2FileDest
 			subject.onNext(res);	
 			subject.onNext("Session Completed!");
 			subject.onCompleted();
 			System.out.println("\n\tSession Completed!");
+			if (img1Handler.getUnzipFile().exists()) {
+				try {
+					FileUtils.deleteDirectory(img1Handler.getUnzipFile());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.println(img1Handler.getUnzipFile().getName() + " deleted succesfully!\n");
+			}
+			else {
+				System.out.println("No file: " + img1Handler.getUnzipFile().getName() + " found.\n");
+			}
+			if (img2Handler.getUnzipFile().exists()) {
+				try {
+					FileUtils.deleteDirectory(img2Handler.getUnzipFile());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.println(img1Handler.getUnzipFile().getName() + " deleted succesfully!\n");
+			}
+			else {
+				System.out.println("No file: " + img1Handler.getUnzipFile().getName() + " found.\n");
+			}
 			return "ok";
 			}
 		catch (NotAuthorizedException e) {
