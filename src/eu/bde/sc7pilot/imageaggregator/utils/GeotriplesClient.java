@@ -30,14 +30,14 @@ public class GeotriplesClient {
 	private String host;
 	private String port;
 	
-	public GeotriplesClient(String host,String port) {
-		this.host=host;
-		this.port=port;
+	public GeotriplesClient(String host, String port) {
+		this.host = host;
+		this.port = port;
 	}
 	
 	public void saveChanges(List<ChangeStore> changesToStore) {
 		Client client = ClientBuilder.newClient(new ClientConfig()).register(ObjectMapperContextResolver.class).register(JacksonFeature.class);
-		ObjectMapper objectMapper=new ObjectMapper();
+		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new JodaModule());
 		objectMapper.registerModule(new JtsModule());
 		objectMapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false));
@@ -52,13 +52,11 @@ public class GeotriplesClient {
 //			e.printStackTrace();
 //		}
 		
-		URI uri = UriBuilder.fromUri(host+":"+port+"/geotriples/changes").build();
-		System.out.println("geotriples url is:"+ uri.toString());
+		URI uri = UriBuilder.fromUri(host + ":" + port + "/geotriples/changes").build();
+		System.out.println("geotriples url is:" + uri.toString());
 		WebTarget target = client.target(uri);
-		Invocation.Builder invocationBuilder =
-				target.request(MediaType.APPLICATION_JSON);
-		Response response = invocationBuilder.post(Entity.entity(changesToStore,MediaType.APPLICATION_JSON),
-				Response.class);
+		Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
+		Response response = invocationBuilder.post(Entity.entity(changesToStore,MediaType.APPLICATION_JSON), Response.class);
 		System.out.println("geotriples response: " + response.getStatus() + " " + response.readEntity(String.class));
 	}
 }

@@ -10,6 +10,8 @@ import java.util.concurrent.Executors;
 import javax.ws.rs.NotAuthorizedException;
 
 import org.apache.commons.io.FileUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.bedatadriven.jackson.datatype.jts.JtsModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -130,6 +132,19 @@ public class Workflow {
 			objectMapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false));
 			String res = objectMapper.writerWithView(Views.Public.class).writeValueAsString(changes);
 			//Create .json and return json. qlook1FileDest qlook2FileDest
+			JSONObject responseJSON = new JSONObject();
+			responseJSON.put("changeset", res);
+			JSONArray imagesList = new JSONArray();
+			JSONObject img1JSON = new JSONObject();
+			JSONObject img2JSON = new JSONObject();
+			img1JSON.put("url", qlook1FileDest.getAbsolutePath());
+			img1JSON.put("extent", img1name);
+			img2JSON.put("url", qlook1FileDest.getAbsolutePath());
+			img2JSON.put("extent", img2name);
+			imagesList.add(img1JSON);
+			imagesList.add(img2JSON);
+			responseJSON.put("images", imagesList);
+			System.out.println("\tJsonResponse to be send to Sextant:\n" + responseJSON + "\n\t...end of response.");
 			subject.onNext(res);	
 			subject.onNext("Session Completed!");
 			subject.onCompleted();
