@@ -138,9 +138,9 @@ public class Workflow {
 			JSONObject img1JSON = new JSONObject();
 			JSONObject img2JSON = new JSONObject();
 			img1JSON.put("url", qlook1FileDest.getAbsolutePath());
-			img1JSON.put("extent", images.get(0).getWKTGeometry());	// 'H img1JSON.put("extent", images.get(0).getFootPrint());
+			img1JSON.put("extent", images.get(0).getFootPrint());	// 'H img1JSON.put("extent", images.get(0).getFootPrint());
 			img2JSON.put("url", qlook1FileDest.getAbsolutePath());
-			img2JSON.put("extent", img2name);
+			img2JSON.put("extent", images.get(1).getFootPrint());
 			imagesList.add(img1JSON);
 			imagesList.add(img2JSON);
 			responseJSON.put("images", imagesList);
