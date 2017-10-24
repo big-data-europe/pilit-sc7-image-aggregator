@@ -4,19 +4,14 @@ import java.util.List;
 
 import eu.bde.sc7pilot.imageaggregator.model.Image;
 
-/**
- *
- * @author efi
- */
-
 public class DownloadService {
 
 	private String username;
 	private String password;
 	
 	public DownloadService(String username,String password) {
-		this.username=username;
-		this.password=password;
+		this.username = username;
+		this.password = password;
 	}
 	
     public void downloadImages(List<Image> images, String outputDirectory) {

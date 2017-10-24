@@ -35,7 +35,7 @@ import rx.subjects.ReplaySubject;
 
 public class Workflow {
 	
-	public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
+	public String runWorkflow(ImageData imageData, ReplaySubject<String> subject) {
 		try {
 			String outputDirectory = "/snap/";		
 			SearchService searchService = new SearchService(imageData.getUsername(),imageData.getPassword());
@@ -138,7 +138,7 @@ public class Workflow {
 			JSONObject img1JSON = new JSONObject();
 			JSONObject img2JSON = new JSONObject();
 			img1JSON.put("url", qlook1FileDest.getAbsolutePath());
-			img1JSON.put("extent", img1name);
+			img1JSON.put("extent", images.get(0).getWKTGeometry());	// 'H img1JSON.put("extent", images.get(0).getFootPrint());
 			img2JSON.put("url", qlook1FileDest.getAbsolutePath());
 			img2JSON.put("extent", img2name);
 			imagesList.add(img1JSON);
