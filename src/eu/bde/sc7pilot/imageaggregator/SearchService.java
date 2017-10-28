@@ -20,7 +20,7 @@ import eu.bde.sc7pilot.imageaggregator.model.ImageData;
 public class SearchService {
 
     private final static int MAX_NO_OF_IMAGES = 1;
-    private final static int DAYS_WINDOW = 3;
+    private final static int DAYS_WINDOW = 4;
     private String username;
     private String password;
 
