@@ -44,6 +44,7 @@ public class SearchClient {
             builder.setParameter(PARAMETER_ROWS, String.valueOf(endIndex));
             builder.setParameter(PARAMETER_START, String.valueOf(startIndex));;
             HttpGet request = new HttpGet(builder.build());
+//            System.out.println("Whole request:\n" + request.toString() + "\n..end of request.");
             
             return httpClient.execute(request);
         } catch (Exception ex) {

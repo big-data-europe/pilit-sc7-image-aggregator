@@ -14,10 +14,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 
-/**
- *
- * @author efi
- */
 
 public class DataClient {
 
@@ -45,13 +41,27 @@ public class DataClient {
         if (id != null) {
             absolutUri.append(ID_PREFIX).append(id).append(ID_SUFFIX).append(SEPARATOR).append(URL_SUFFIX);
         }
-        System.out.println(absolutUri.toString());
+        System.out.println("URI to download: " + absolutUri.toString());
         return absolutUri.toString();
     }
 
     public void downloadAndSaveById(String id, String targetFile) throws IOException {
         OutputStream target = new FileOutputStream(targetFile);
         String absolutUri = createUri(SERVICE_URL, ENTITY_SET_NAME, id);
+        InputStream content = null;
+        try {
+            content = execute(absolutUri, USED_FORMAT);
+            IOUtils.copy(content, target);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        target.close();
+    }
+    
+    public void downloadQuickLook(String id, String targetFile) throws IOException {
+        OutputStream target = new FileOutputStream(targetFile);
+        String absolutUri = "https://scihub.copernicus.eu/dhus/odata/v1/Products('" + id + "')/Products('Quicklook')/$value";
+        System.out.println("URI to download:\t" + absolutUri);
         InputStream content = null;
         try {
             content = execute(absolutUri, USED_FORMAT);

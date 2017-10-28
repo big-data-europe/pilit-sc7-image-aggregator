@@ -37,7 +37,8 @@ public class Workflow {
 	
 	public String runWorkflow(ImageData imageData, ReplaySubject<String> subject) {
 		try {
-			String outputDirectory = "/snap/";		
+//			String outputDirectory = "/snap/";
+			String outputDirectory = "/media/indiana/data/imgs/Sentinel2/testia/";
 			SearchService searchService = new SearchService(imageData.getUsername(),imageData.getPassword());
 			DownloadService downloadService = new DownloadService(imageData.getUsername(),imageData.getPassword());
 			subject.onNext("Searching for images...");
@@ -51,6 +52,16 @@ public class Workflow {
 			}
 		    String img1name = images.get(0).getName();
 		    String img2name = images.get(1).getName();
+		    String img3name = images.get(2).getName();
+		    String img4name = images.get(3).getName();
+		    System.out.println("\n\n" + img1name);
+		    System.out.println(images.get(0).getId() + "\n");
+		    System.out.println(img2name);
+		    System.out.println(images.get(1).getId() + "\n");
+		    System.out.println(img3name);
+		    System.out.println(images.get(2).getId() + "\n");
+		    System.out.println(img4name);
+		    System.out.println(images.get(3).getId() + "\n\n");
 		    
 		    subject.onNext("Downloading images...@@@" + img1name + "@@@" + img2name);
 			System.out.println("Downloading images...@@@" + img1name + "@@@" + img2name);
@@ -59,23 +70,27 @@ public class Workflow {
 			//Name-processing of the downloaded images
 			String img1 = img1name + ".zip";
 			String img2 = img2name + ".zip";
+			String img3 = img3name + ".jpeg";
+			String img4 = img4name + ".jpeg";
 		    String img1cod = img1name.substring(img1name.length()-4);//last 4 characters of the image name
 		    String img2cod = img2name.substring(img2name.length()-4);
 			System.out.println("\nThe first img's filepath is: " + outputDirectory + img1);
 			System.out.println("The second img's filepath is: " + outputDirectory + img2);
+			System.out.println("The third img's filepath is: " + outputDirectory + img3);
+			System.out.println("The fourth img's filepath is: " + outputDirectory + img4);
 
 			
 			//Handling the downloaded images
-			Sentinel1ImagesHandler img1Handler = new Sentinel1ImagesHandler(img1);
-			Sentinel1ImagesHandler img2Handler = new Sentinel1ImagesHandler(img2);
-			String qlook1 = img1Handler.findQuickLook();
-			String qlook2 = img2Handler.findQuickLook();
-			File qlook1File = new File(qlook1);
-			File qlook2File = new File(qlook2);
-			File qlook1FileDest = new File(outputDirectory + img1cod + "qlook.png");
-			File qlook2FileDest = new File(outputDirectory + img2cod + "qlook.png");
-			FileUtils.copyFile(qlook1File, qlook1FileDest);
-			FileUtils.copyFile(qlook2File, qlook2FileDest);
+//			Sentinel1ImagesHandler img1Handler = new Sentinel1ImagesHandler(img1);
+//			Sentinel1ImagesHandler img2Handler = new Sentinel1ImagesHandler(img2);
+//			String qlook1 = img1Handler.findQuickLook();
+//			String qlook2 = img2Handler.findQuickLook();
+			File qlook1File = new File(outputDirectory + img3);
+			File qlook2File = new File(outputDirectory + img4);
+//			File qlook1FileDest = new File(outputDirectory + img1cod + "qlook.png");
+//			File qlook2FileDest = new File(outputDirectory + img2cod + "qlook.png");
+//			FileUtils.copyFile(qlook1File, qlook1FileDest);
+//			FileUtils.copyFile(qlook2File, qlook2FileDest);
 			
 			
 			//Preparing subseting
@@ -137,9 +152,9 @@ public class Workflow {
 			JSONArray imagesList = new JSONArray();
 			JSONObject img1JSON = new JSONObject();
 			JSONObject img2JSON = new JSONObject();
-			img1JSON.put("url", qlook1FileDest.getAbsolutePath());
+			img1JSON.put("url", qlook1File.getAbsolutePath());
 			img1JSON.put("extent", images.get(0).getFootPrint());	// 'H img1JSON.put("extent", images.get(0).getFootPrint());
-			img2JSON.put("url", qlook1FileDest.getAbsolutePath());
+			img2JSON.put("url", qlook2File.getAbsolutePath());
 			img2JSON.put("extent", images.get(1).getFootPrint());
 			imagesList.add(img1JSON);
 			imagesList.add(img2JSON);
@@ -149,30 +164,30 @@ public class Workflow {
 			subject.onNext("Session Completed!");
 			subject.onCompleted();
 			System.out.println("\n\tSession Completed!");
-			if (img1Handler.getUnzipFile().exists()) {
-				try {
-					FileUtils.deleteDirectory(img1Handler.getUnzipFile());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				System.out.println(img1Handler.getUnzipFile().getName() + " deleted succesfully!\n");
-			}
-			else {
-				System.out.println("No file: " + img1Handler.getUnzipFile().getName() + " found.\n");
-			}
-			if (img2Handler.getUnzipFile().exists()) {
-				try {
-					FileUtils.deleteDirectory(img2Handler.getUnzipFile());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				System.out.println(img1Handler.getUnzipFile().getName() + " deleted succesfully!\n");
-			}
-			else {
-				System.out.println("No file: " + img1Handler.getUnzipFile().getName() + " found.\n");
-			}
+//			if (img1Handler.getUnzipFile().exists()) {
+//				try {
+//					FileUtils.deleteDirectory(img1Handler.getUnzipFile());
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				System.out.println(img1Handler.getUnzipFile().getName() + " deleted succesfully!\n");
+//			}
+//			else {
+//				System.out.println("No file: " + img1Handler.getUnzipFile().getName() + " found.\n");
+//			}
+//			if (img2Handler.getUnzipFile().exists()) {
+//				try {
+//					FileUtils.deleteDirectory(img2Handler.getUnzipFile());
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				System.out.println(img1Handler.getUnzipFile().getName() + " deleted succesfully!\n");
+//			}
+//			else {
+//				System.out.println("No file: " + img1Handler.getUnzipFile().getName() + " found.\n");
+//			}
 			return "ok";
 			}
 		catch (NotAuthorizedException e) {
