@@ -160,7 +160,7 @@ public class Workflow {
 			imagesList.add(img2JSON);
 			responseJSON.put("images", imagesList);
 			System.out.println("\tJsonResponse to be send to Sextant:\n" + responseJSON + "\n\t...end of response.");
-			subject.onNext(res);	
+			subject.onNext(responseJSON.toString());	
 			subject.onNext("Session Completed!");
 			subject.onCompleted();
 			System.out.println("\n\tSession Completed!");
