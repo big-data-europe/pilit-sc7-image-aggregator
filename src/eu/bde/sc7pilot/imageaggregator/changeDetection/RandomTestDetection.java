@@ -29,20 +29,15 @@ public class RandomTestDetection implements ChangeDetection {
 		List<Change> changes = new ArrayList<Change>();
 		Image targetImage = images.get(0);
 		Image sourceImage = images.get(1);
-		System.out.println(targetImage.getDate());
-		System.out.println(sourceImage.getDate());
 		Change change = null;
 		DateTimeFormatter parser22 = ISODateTimeFormat.dateTimeParser();
-		//Coordinate[] coords = images.get(0).getWKTGeometry().getCoordinates();
 		
 		//*** Take the real DBScan result and return its polygons as changes
 		ArrayList<String> geometriesArrayList = new ArrayList<>();
 		String line = "";
 		try (BufferedReader br = new BufferedReader(new FileReader(finalOutput))) {
 			while ((line = br.readLine()) != null) {
-//				System.out.println("Counter: " + counter);
 				geometriesArrayList.add(line);
-//				System.out.println("Line: " + counter + " : " + line);
 		    }
 		}
 		System.out.println("Number Of Lines in geometriesArrayList: " + geometriesArrayList.size());		
@@ -57,12 +52,12 @@ public class RandomTestDetection implements ChangeDetection {
 				Coordinate newLeftUp = new Coordinate((double)(env.getMinX()+random.nextDouble()*(env.getMaxX()-env.getMinX())),env.getMinY()+random.nextDouble()*(env.getMaxY()-env.getMinY()));
 				Coordinate newRightDown = new Coordinate((double)(env.getMinX()+random.nextDouble()*(env.getMaxX()-env.getMinX())),env.getMinY()+random.nextDouble()*(env.getMaxY()-env.getMinY()));
 				newPolygonCoords[0] = newLeftUp;
-				newPolygonCoords[1] = new Coordinate(newRightDown.x,newLeftUp.y);
+				newPolygonCoords[1] = new Coordinate(newRightDown.x, newLeftUp.y);
 				newPolygonCoords[2] = newRightDown;
-				newPolygonCoords[3] = new Coordinate(newLeftUp.x,newRightDown.y);
-				newPolygonCoords[imageData.getArea().getCoordinates().length-1] = newPolygonCoords[0];
+				newPolygonCoords[3] = new Coordinate(newLeftUp.x, newRightDown.y);
+				newPolygonCoords[imageData.getArea().getCoordinates().length - 1] = newPolygonCoords[0];
 				GeometryFactory f = new GeometryFactory();
-				System.out.println(f.createPolygon(newPolygonCoords));
+//				System.out.println(f.createPolygon(newPolygonCoords));	//Uncomment to see the dummy-response polygons.
 				Geometry newg = f.createPolygon(newPolygonCoords);
 				nOfChanges++;		
 				Area area = new Area("test area" + nOfChanges, newg, IdRetrieval.getId(false));

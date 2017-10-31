@@ -151,13 +151,13 @@ public class Workflow {
 			JSONObject img1JSON = new JSONObject();
 			JSONObject img2JSON = new JSONObject();
 			img1JSON.put("url", qlook1File.getAbsolutePath());
-			img1JSON.put("extent", images.get(2).getFootPrint());	// 'H img1JSON.put("extent", images.get(0).getFootPrint());
+			img1JSON.put("extent", images.get(2).getFootPrint());
 			img2JSON.put("url", qlook2File.getAbsolutePath());
 			img2JSON.put("extent", images.get(3).getFootPrint());
 			imagesList.add(img1JSON);
 			imagesList.add(img2JSON);
 			responseJSON.put("images", imagesList);
-			System.out.println("\tJsonResponse to be send to Sextant:\n" + responseJSON.toString() + "\n\t...end of response.");
+//			System.out.println("\tJsonResponse to be send to Sextant:\n" + responseJSON.toString() + "\n\t...end of response.");
 			subject.onNext(responseJSON.toString());	
 			subject.onNext("Session Completed!");
 			subject.onCompleted();
