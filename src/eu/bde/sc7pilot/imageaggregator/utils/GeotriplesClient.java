@@ -53,10 +53,10 @@ public class GeotriplesClient {
 //		}
 		
 		URI uri = UriBuilder.fromUri(host + ":" + port + "/geotriples/changes").build();
-		System.out.println("geotriples url is:" + uri.toString());
+		System.out.println("GeoTriples url is:\t" + uri.toString());
 		WebTarget target = client.target(uri);
 		Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
 		Response response = invocationBuilder.post(Entity.entity(changesToStore,MediaType.APPLICATION_JSON), Response.class);
-		System.out.println("geotriples response: " + response.getStatus() + " " + response.readEntity(String.class));
+		System.out.println("GeoTriples response:\t" + response.getStatus() + " " + response.readEntity(String.class));
 	}
 }

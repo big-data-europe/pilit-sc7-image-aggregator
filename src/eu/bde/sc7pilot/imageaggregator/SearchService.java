@@ -91,10 +91,6 @@ public class SearchService {
                 throw e;
             }
         }
-        System.out.println("\nIMAGE1-DATE:\t" + productsToDowload.get(0).getDate());
-        System.out.println("IMAGE2-DATE:\t" + productsToDowload.get(1).getDate());
-        System.out.println("QL-IMAGE3-DATE:\t" + productsToDowload.get(2).getDate());
-        System.out.println("QL-IMAGE4-DATE:\t" + productsToDowload.get(3).getDate() + "\n");
 //        for(int i = 0; i < productsToDowload.size(); i++) {
 //        	System.out.println("\n" + i + "th of products to download:\n");
 //        	System.out.println(productsToDowload.get(i).getName());

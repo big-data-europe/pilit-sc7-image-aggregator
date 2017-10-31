@@ -41,7 +41,7 @@ public class DataClient {
         if (id != null) {
             absolutUri.append(ID_PREFIX).append(id).append(ID_SUFFIX).append(SEPARATOR).append(URL_SUFFIX);
         }
-        System.out.println("URI to download: " + absolutUri.toString());
+        System.out.println("URI to download:\t" + absolutUri.toString());
         return absolutUri.toString();
     }
 

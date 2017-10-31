@@ -134,7 +134,6 @@ public class Query {
         }
         System.out.println("\nQUERY TO SCIHUB:");
         System.out.println(query);
-        System.out.println("");
         return query; //To change body of generated methods, choose Tools | Templates.
     }
 

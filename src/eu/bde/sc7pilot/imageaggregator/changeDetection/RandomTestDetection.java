@@ -122,8 +122,6 @@ public class RandomTestDetection implements ChangeDetection {
 		List<ChangeStore> changesToStore = new ArrayList<ChangeStore>();
 		Image targetImage = images.get(0);
 		Image sourceImage = images.get(1);
-		System.out.println(targetImage.getDate());
-		System.out.println(sourceImage.getDate());
 		ChangeStore changeToStore = null;
 		//Coordinate[] coords = images.get(0).getWKTGeometry().getCoordinates();
 
@@ -132,9 +130,7 @@ public class RandomTestDetection implements ChangeDetection {
 		String line = "";
 		try (BufferedReader br = new BufferedReader(new FileReader(finalOutput))) {
 			while ((line = br.readLine()) != null) {
-//				System.out.println("Counter: " + counter);
 				geometriesArrayList.add(line);
-//				System.out.println("Line: " + counter + " : " + line);
 		    }
 		}
 		System.out.println("Number Of Lines in geometriesArrayList: " + geometriesArrayList.size());		
@@ -154,7 +150,7 @@ public class RandomTestDetection implements ChangeDetection {
 				newPolygonCoords[3] = new Coordinate(newLeftUp.x,newRightDown.y);
 				newPolygonCoords[imageData.getArea().getCoordinates().length-1] = newPolygonCoords[0];
 				GeometryFactory f = new GeometryFactory();
-				System.out.println(f.createPolygon(newPolygonCoords));
+//				System.out.println(f.createPolygon(newPolygonCoords));	//Uncomment to see the dummy-response polygons.
 				Geometry newg = f.createPolygon(newPolygonCoords);
 				nOfChanges++;		
 				Area area = new Area("test area" + nOfChanges, newg, IdRetrieval.getId(false));

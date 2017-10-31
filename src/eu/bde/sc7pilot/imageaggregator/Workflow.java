@@ -37,8 +37,8 @@ public class Workflow {
 	
 	public String runWorkflow(ImageData imageData, ReplaySubject<String> subject) {
 		try {
-//			String outputDirectory = "/snap/";
-			String outputDirectory = "/media/indiana/data/imgs/Sentinel2/testia/";
+			String outputDirectory = "/snap/";										// To run Dockerly
+//			String outputDirectory = "/media/indiana/data/imgs/Sentinel2/testia/";	// To run locally
 			SearchService searchService = new SearchService(imageData.getUsername(),imageData.getPassword());
 			DownloadService downloadService = new DownloadService(imageData.getUsername(),imageData.getPassword());
 			subject.onNext("Searching for images...");
@@ -50,21 +50,19 @@ public class Workflow {
 				subject.onCompleted();
 				return "ok";
 			}
+			for(int i = 0; i < images.size(); i ++){
+				System.out.println("\n\tINFO FOR IMAGE: " + i);
+				System.out.println(images.get(i).getName());
+				System.out.println(images.get(i).getId());
+				System.out.println(images.get(i).getDate());
+			}
 		    String img1name = images.get(0).getName();
 		    String img2name = images.get(1).getName();
 		    String img3name = images.get(2).getName();
 		    String img4name = images.get(3).getName();
-		    System.out.println("\n\n" + img1name);
-		    System.out.println(images.get(0).getId() + "\n");
-		    System.out.println(img2name);
-		    System.out.println(images.get(1).getId() + "\n");
-		    System.out.println(img3name);
-		    System.out.println(images.get(2).getId() + "\n");
-		    System.out.println(img4name);
-		    System.out.println(images.get(3).getId() + "\n\n");
 		    
 		    subject.onNext("Downloading images...@@@" + img1name + "@@@" + img2name);
-			System.out.println("Downloading images...@@@" + img1name + "@@@" + img2name);
+			System.out.println("\n\nDownloading images...@@@" + img1name + "@@@" + img2name);
 			downloadService.downloadImages(images, outputDirectory);
 			
 			//Name-processing of the downloaded images
@@ -74,10 +72,10 @@ public class Workflow {
 			String img4 = img4name + ".jpeg";
 		    String img1cod = img1name.substring(img1name.length()-4);//last 4 characters of the image name
 		    String img2cod = img2name.substring(img2name.length()-4);
-			System.out.println("\nThe first img's filepath is: " + outputDirectory + img1);
-			System.out.println("The second img's filepath is: " + outputDirectory + img2);
-			System.out.println("The third img's filepath is: " + outputDirectory + img3);
-			System.out.println("The fourth img's filepath is: " + outputDirectory + img4);
+			System.out.println("\nThe first img's filepath is:\t" + outputDirectory + img1);
+			System.out.println("The second img's filepath is:\t" + outputDirectory + img2);
+			System.out.println("The third img's filepath is:\t" + outputDirectory + img3);
+			System.out.println("The fourth img's filepath is:\t" + outputDirectory + img4);
 
 			
 			//Handling the downloaded images
@@ -97,9 +95,9 @@ public class Workflow {
 			subject.onNext("Performing subseting...");
 			String polygonSelected = imageData.getArea().toString(); //.replace("(", "\\(");
 			//polygonFixed = polygonFixed.replace(")", "\\)");
-			System.out.println("User's selected polygon is: " + polygonSelected);
+			System.out.println("\n\nUser's selected polygon is: " + polygonSelected);
 			//Run Subset operator
-			System.out.println("\n\n\tRunning Subset operator 2 times for the 2 images.");
+			System.out.println("\n\n\tRunning Subset operator one time for each Sentinel1 image.");
 			RunSubset subsetOp1 = new RunSubset("/runsubset.sh", outputDirectory, img1, polygonSelected);
 		    String resultSubsetOp1 = subsetOp1.runSubset();
 		    RunSubset subsetOp2 = new RunSubset("/runsubset.sh", outputDirectory, img2, polygonSelected);
@@ -134,12 +132,12 @@ public class Workflow {
 			System.out.println("\n\tStoring results...");
 			subject.onNext("Storing results...");
 			List<ChangeStore> changesToStore = changeDetection.detectChangesForStore(images, imageData, dbSCANoutputFilepath);
-			GeotriplesClient client = new GeotriplesClient("http://geotriples","8080");
+			GeotriplesClient client = new GeotriplesClient("http://geotriples", "8080");
 			client.saveChanges(changesToStore);
 
-			// Visualizing Polygons with changes to Sextant			
+			// Visualizing Polygons with changes to Sextant
+			System.out.println("\n\n\tVisualizing results...");
 			List<Change> changes = changeDetection.detectChanges(images, imageData, dbSCANoutputFilepath);
-			System.out.println("\n\tVisualizing results...");
 			ObjectMapper objectMapper = new ObjectMapper();
 			objectMapper.registerModule(new JodaModule());
 			objectMapper.registerModule(new JtsModule());			
@@ -159,7 +157,7 @@ public class Workflow {
 			imagesList.add(img1JSON);
 			imagesList.add(img2JSON);
 			responseJSON.put("images", imagesList);
-			System.out.println("\tJsonResponse to be send to Sextant:\n" + responseJSON + "\n\t...end of response.");
+			System.out.println("\tJsonResponse to be send to Sextant:\n" + responseJSON.toString() + "\n\t...end of response.");
 			subject.onNext(responseJSON.toString());	
 			subject.onNext("Session Completed!");
 			subject.onCompleted();
