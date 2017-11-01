@@ -20,7 +20,7 @@ import eu.bde.sc7pilot.imageaggregator.model.ImageData;
 public class SearchService {
 
     private final static int MAX_NO_OF_IMAGES = 1;
-    private final static int DAYS_WINDOW = 4;
+    private final static int DAYS_WINDOW = 5;
     private String username;
     private String password;
 
@@ -52,6 +52,12 @@ public class SearchService {
             eventProoductsToSearch = sClient.search(query2.toString(), 0, MAX_NO_OF_IMAGES);
             refQuickLookToSearch = sClient.search(query3.toString(), 0, MAX_NO_OF_IMAGES);
             eventQuickLookToSearch = sClient.search(query4.toString(), 0, MAX_NO_OF_IMAGES);
+            if (refProductsToSearch.isEmpty() || eventProoductsToSearch.isEmpty() || refQuickLookToSearch.isEmpty() || eventQuickLookToSearch.isEmpty()) {
+            	System.out.println("query1 returned Sentinel1 old images =\t" + refProductsToSearch.size());
+            	System.out.println("query2 returned Sentinel1 new images =\t" + eventProoductsToSearch.size());
+            	System.out.println("query3 returned Sentinel2 old images =\t" + refQuickLookToSearch.size());
+            	System.out.println("query4 returned Sentinel2 new images =\t" + eventQuickLookToSearch.size());
+            }
             for(int i = 0; i < MAX_NO_OF_IMAGES; i++) {
             	productsToSearch.add(refProductsToSearch.get(i));
             	productsToSearch.add(eventProoductsToSearch.get(i));
