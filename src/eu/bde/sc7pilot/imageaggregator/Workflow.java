@@ -24,21 +24,15 @@ import rx.Observable;
 import rx.subjects.ReplaySubject;
 
 public class Workflow {
-public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
-	 try {
-//			String outputDirectory=System.getProperty("user.home")+"/images/";
-//			File dir=new File(outputDirectory);
-//					if(!dir.exists()){
-//						dir.mkdir();
-//					}
-		 	String outputDirectory="/images/";		
+	public String runWorkflow(ImageData imageData, ReplaySubject<String> subject) {
+		try {
+			String outputDirectory="/images/";		
 			SearchService searchService=new SearchService(imageData.getUsername(),imageData.getPassword());
 			DownloadService downloadService=new DownloadService(imageData.getUsername(),imageData.getPassword());
 			subject.onNext("Searching for images...");
 			List<Image> images=searchService.searchImages(imageData);
 			
-			if(images.size()<=1)
-			{
+			if(images.size() <= 1) {
 				subject.onNext("No images were found for the specified parameters.");
 				subject.onCompleted();
 				return "ok";
@@ -75,7 +69,7 @@ public String runWorkflow(ImageData imageData,ReplaySubject<String> subject) {
 			
 			subject.onCompleted();
 			return "ok";
-		 }catch (NotAuthorizedException e) {
+		 } catch (NotAuthorizedException e) {
 		        subject.onError(e);
 		        return "error";
 		    }
