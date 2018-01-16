@@ -24,14 +24,16 @@ import eu.bde.sc7pilot.imageaggregator.webconfig.RestTimestampParam;
 
 @Path("/changes")
 public class ImageAggregatorService {
+	
 	@GET
 	@Path("/progress")
 	@Produces(SseFeature.SERVER_SENT_EVENTS)
 	public EventOutput changeDetectionwithProgress(@QueryParam("extent") String extent,
-			@QueryParam("event_date") RestTimestampParam eventDate,
-			@QueryParam("reference_date") RestTimestampParam referenceDate,
-			@QueryParam("polarization") String selectedPolarisations, @QueryParam("username") String username,
-			@QueryParam("password") String password) throws Exception {
+													@QueryParam("event_date") RestTimestampParam eventDate,
+													@QueryParam("reference_date") RestTimestampParam referenceDate,
+													@QueryParam("polarization") String selectedPolarisations,
+													@QueryParam("username") String username,
+													@QueryParam("password") String password) throws Exception {
 		final EventOutput eventOutput = new EventOutput();
 		if (extent == null) {
 			handleServerException(eventOutput, "extent should not be null.");
@@ -43,14 +45,13 @@ public class ImageAggregatorService {
 		else
 			eventDate2 = eventDate.getDate();
 		if (referenceDate == null)
-			referenceDate2 = eventDate2.minusDays(10);
+			referenceDate2 = eventDate2.minusDays(100);
 		else
 			referenceDate2 = referenceDate.getDate();
 
 		WKTReader wktReader = new WKTReader();
-
-		ImageData imageData = new ImageData(eventDate2, referenceDate2, null, username, password,
-				new String[] { "ff" });
+		ImageData imageData = new ImageData(eventDate2, referenceDate2, null, username, password, new String[] { "ff" });
+		
 		try {
 			Geometry geometry = wktReader.read(extent);
 			imageData.setArea(geometry);

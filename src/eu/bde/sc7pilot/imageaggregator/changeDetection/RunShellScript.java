@@ -2,21 +2,21 @@ package eu.bde.sc7pilot.imageaggregator.changeDetection;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 
 import org.apache.commons.io.IOUtils;
 
-public class RunChangeDetector {
+public class RunShellScript {
 	private String scriptPath;
-	private String img1;
-	private String img2;
+	private ArrayList<String> scriptArgs;
 	
-	public RunChangeDetector(String scriptPath, String img1, String img2) {
+	public RunShellScript(String scriptPath, ArrayList<String> scriptArgs) {
 		this.scriptPath = scriptPath;
-		this.img1 = img1;
-		this.img2 = img2;
+		this.scriptArgs = scriptArgs;
 	}
 
-	public String  runchangeDetector()throws IOException {
+	public String  runchangeDetector() throws IOException {
+		
 		ProcessBuilder pb = new ProcessBuilder(scriptPath, img1, img2);
 		pb.redirectErrorStream(true);
 		
@@ -40,4 +40,5 @@ public class RunChangeDetector {
 		System.out.println( writer.toString());
 		return writer.toString();
 	}
+
 }
