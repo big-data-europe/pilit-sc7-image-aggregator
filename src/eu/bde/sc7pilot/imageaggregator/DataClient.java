@@ -62,6 +62,7 @@ public class DataClient {
         OutputStream target = new FileOutputStream(targetFile);
         String absolutUri = "https://scihub.copernicus.eu/dhus/odata/v1/Products('" + id + "')/Products('Quicklook')/$value";
         System.out.println("URI to download:\t" + absolutUri);
+        System.out.println("img's absolute filepath is:\t" + targetFile);
         InputStream content = null;
         try {
             content = execute(absolutUri, USED_FORMAT);

@@ -8,17 +8,21 @@ import java.util.concurrent.Executors;
 
 import javax.ws.rs.NotAuthorizedException;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.bedatadriven.jackson.datatype.jts.JtsModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 import eu.bde.sc7pilot.imageaggregator.changeDetection.RandomTestDetection;
-import eu.bde.sc7pilot.imageaggregator.changeDetection.RunChangeDetector;
 import eu.bde.sc7pilot.imageaggregator.model.Change;
+import eu.bde.sc7pilot.imageaggregator.model.ChangeStore;
 import eu.bde.sc7pilot.imageaggregator.model.Image;
 import eu.bde.sc7pilot.imageaggregator.model.ImageData;
 import eu.bde.sc7pilot.imageaggregator.utils.GeotriplesClient;
+import eu.bde.sc7pilot.imageaggregator.utils.IAutils;
 import eu.bde.sc7pilot.imageaggregator.utils.Views;
 import rx.Observable;
 import rx.subjects.ReplaySubject;
@@ -27,55 +31,42 @@ public class Workflow {
 	
 	public String runWorkflow(ImageData imageData, ReplaySubject<String> subject) {
 		try {
-			String outputDirectory = "/snap/";		
+//			String outputDirectory = "/snap/";
+			String outputDirectory = "/media/indiana/data/imgs/";
 			SearchService searchService = new SearchService(imageData.getUsername(), imageData.getPassword());
 			DownloadService downloadService = new DownloadService(imageData.getUsername(), imageData.getPassword());
 			subject.onNext("Searching for images...");
 			List<Image> images = searchService.searchImages(imageData);
 			
 			if(images.size() <= 1) {
-				subject.onNext("No images were found for the specified parameters.");
+				subject.onNext("No suitable images were found for the specified parameters.");
 				subject.onCompleted();
 				return "ok";
 			}
 			
-			for(int i = 0; i < images.size(); i ++){
-				System.out.println("\n\tINFO FOR IMAGE: " + i);
-				System.out.println(images.get(i).getName());
-				System.out.println(images.get(i).getId());
-				System.out.println(images.get(i).getDate());
-			}
+			IAutils.infoImages(images);
+			
+			//Name-processing of the to-be-downloaded images
 		    String img1name = images.get(0).getName();
 		    String img2name = images.get(1).getName();
 		    String img3name = images.get(2).getName();
 		    String img4name = images.get(3).getName();
-		    
-		    subject.onNext("Downloading images...@@@" + img1name + "@@@" + img2name);
-			downloadService.downloadImages(images, outputDirectory);
-			
-			//Name-processing of the downloaded images
 			String img1 = img1name + ".zip";
 			String img2 = img2name + ".zip";
 			String img3 = img3name + ".jpeg";
 			String img4 = img4name + ".jpeg";
 		    String img1cod = img1name.substring(img1name.length()-4);//last 4 characters of the image name
 		    String img2cod = img2name.substring(img2name.length()-4);
-			System.out.println("\nThe first img's filepath is:\t" + outputDirectory + img1);
-			System.out.println("The second img's filepath is:\t" + outputDirectory + img2);
-			System.out.println("The third img's filepath is:\t" + outputDirectory + img3);
-			System.out.println("The fourth img's filepath is:\t" + outputDirectory + img4);
+		    String cdCode = img1cod + "vs" + img2cod;
+
+		    subject.onNext("Downloading images...@@@" + img1name + "@@@" + img2name);
+			downloadService.downloadImages(images, outputDirectory);
 			
-			//Handling the downloaded images
-//			Sentinel1ImagesHandler img1Handler = new Sentinel1ImagesHandler(img1);
-//			Sentinel1ImagesHandler img2Handler = new Sentinel1ImagesHandler(img2);
-//			String qlook1 = img1Handler.findQuickLook();
-//			String qlook2 = img2Handler.findQuickLook();
 			File qlook1File = new File(outputDirectory + img3);
 			File qlook2File = new File(outputDirectory + img4);
-//			File qlook1FileDest = new File(outputDirectory + img1cod + "qlook.png");
-//			File qlook2FileDest = new File(outputDirectory + img2cod + "qlook.png");
-//			FileUtils.copyFile(qlook1File, qlook1FileDest);
-//			FileUtils.copyFile(qlook2File, qlook2FileDest);
+			
+			// Downloading dem
+			IAutils.downloadDem(imageData.getArea(), cdCode);
 			
 			//Preparing subseting
 			subject.onNext("Performing subseting...");
@@ -84,10 +75,8 @@ public class Workflow {
 			System.out.println("\n\nUser's selected polygon is: " + polygonSelected);
 			//Run Subset operator
 			System.out.println("\n\n\tRunning Subset operator one time for each Sentinel1 image.");
-			RunSubset subsetOp1 = new RunSubset("/runsubset.sh", outputDirectory, img1, polygonSelected);
-		    String resultSubsetOp1 = subsetOp1.runSubset();
-		    RunSubset subsetOp2 = new RunSubset("/runsubset.sh", outputDirectory, img2, polygonSelected);
-		    String resultSubsetOp2 = subsetOp2.runSubset();
+			IAutils.runShellScript("/runsubset.sh", outputDirectory, img1, polygonSelected);
+			IAutils.runShellScript("/runsubset.sh", outputDirectory, img2, polygonSelected);
 		    
 		    //Preparing change-detectioning
 		    System.out.println("\n\n\tPerforming Change-Detection.");
@@ -97,18 +86,14 @@ public class Workflow {
 			String sub2dim = outputDirectory + "subset_of_" + img2name + ".dim";
 			String sub2tif = outputDirectory + "subset_of_" + img2name + ".tif";
 			//Run change detection
-			RunChangeDetector runCD = new RunChangeDetector("/runchangedet.sh", sub1dim, sub1tif, sub2dim, sub2tif);
-	        String resultCD = runCD.runchangeDetector();
-			//uncomment the next line to see the output of the shell script
-			//subject.onNext(result.substring(0, 20));
+			IAutils.runShellScript("/runchangedet.sh", sub1dim, sub1tif, sub2dim, sub2tif);
 
 			//Preparing DBScaning
 	        System.out.println("\n\n\tPerforming DBScan.");
 	        subject.onNext("Performing DBScan...");
 			String dbSCANoutput = img1cod + "vs" + img2cod + "coords.txt";
 			//Run DBScan	    
-			RunDBscan runDBS = new RunDBscan("/rundbscan.sh", outputDirectory, "SparkChangeDetResult.dim", dbSCANoutput);
-			String resultDBS = runDBS.runDBscan();
+			IAutils.runShellScript("/rundbscan.sh", outputDirectory, "SparkChangeDetResult.dim", dbSCANoutput);
 			String dbSCANoutputFilepath = outputDirectory + dbSCANoutput;
 
 			// Processing the DBScan's output with polygons defining possible changes
@@ -181,20 +166,24 @@ public class Workflow {
 		        subject.onError(e);
 		        return "error";
 		    }
-}
-public Observable<String> downloadImages(ImageData imageData) throws Exception {
-	final ReplaySubject<String> subject = ReplaySubject.create();
-	detectChangesAsync(imageData,subject).handle((ok, ex) -> {
-	    if (ok != null) {
-	        return ok;
-	    } else {
-	         return ex.getMessage();
-	    }
-	});
-	return subject;
-}
-private CompletableFuture<String> detectChangesAsync(ImageData imageData,ReplaySubject<String> subject){
-	ExecutorService executor = Executors.newFixedThreadPool(1);
-    return CompletableFuture.supplyAsync(()->runWorkflow(imageData,subject),executor);
-}
+	}
+
+	public Observable<String> downloadImages(ImageData imageData) throws Exception {
+		final ReplaySubject<String> subject = ReplaySubject.create();
+		detectChangesAsync(imageData,subject).handle((ok, ex) -> {
+			if (ok != null) {
+				return ok;
+			}
+			else {
+				return ex.getMessage();
+			}
+		});
+		return subject;
+	}
+	
+	private CompletableFuture<String> detectChangesAsync(ImageData imageData,ReplaySubject<String> subject) {
+		ExecutorService executor = Executors.newFixedThreadPool(1);
+		return CompletableFuture.supplyAsync(()->runWorkflow(imageData,subject),executor);
+	}
+
 }

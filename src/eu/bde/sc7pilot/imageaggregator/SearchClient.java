@@ -17,7 +17,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import eu.bde.sc7pilot.imageaggregator.model.Image;
 
 /**
- *
  * @author efi
  */
 
@@ -43,7 +42,7 @@ public class SearchClient {
             builder.setParameter(PARAMETER_QUERY, query);
             builder.setParameter(PARAMETER_ROWS, String.valueOf(endIndex));
             builder.setParameter(PARAMETER_START, String.valueOf(startIndex));
-            System.out.println(builder.build());
+            System.out.println("Building QYERY:\t" + builder.build());
             HttpGet request = new HttpGet(builder.build());
             
             return httpClient.execute(request);
@@ -77,7 +76,7 @@ public class SearchClient {
      
     public List<Image> search(String query, int startIndex, int endIndex) {
         HttpResponse response = getResponse(query, startIndex, endIndex);
-        if(response.getStatusLine().getStatusCode()==401)
+        if(response.getStatusLine().getStatusCode() == 401)
         	throw new NotAuthorizedException(response);
         return parseResponse(response);
     }

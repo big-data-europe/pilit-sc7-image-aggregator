@@ -38,7 +38,7 @@ public class DownloadService {
             String imageName = image.getName();
             try {
             	long startDownl = System.currentTimeMillis();
-            	System.out.println("\nDownloading image: " + image.getName());
+            	System.out.println("\nDownloading image:\t" + image.getName());
                 imageService.downloadAndSaveById(image.getId(), outputDirectory + imageName + ".zip");
                 long endDownl = System.currentTimeMillis();
                 long downlTime = (endDownl - startDownl)/60000;
