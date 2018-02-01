@@ -1,5 +1,6 @@
 package eu.bde.sc7pilot.imageaggregator.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
@@ -13,6 +14,18 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import eu.bde.sc7pilot.imageaggregator.model.Image;
 
 public class IAutils {
+	
+	public static void applyTerrainCorrection(String shAbsFilepath, String imgFilePath, String demFilePath, String resultFilePath, Geometry selectedArea) {
+		System.out.println("Selected Polygon:\t" + selectedArea);
+    	Envelope areasEnvelope = selectedArea.getEnvelopeInternal();
+		double minX = areasEnvelope.getMinX();
+		double minY = areasEnvelope.getMinY();
+		double maxX = areasEnvelope.getMaxX();
+		double maxY = areasEnvelope.getMaxY();
+		
+		//code to submit the shell script that downloads the dem according to mins and maxes
+		//runShellScript(shAbsFilepath, imgFilePath, demFilePath, resultFilePath, minX, minY, maxX, maxY);
+	}
 	
     /*
      * The areaWithinImage checks if the (user's) selectedArea is within the area the image covers.
@@ -40,7 +53,7 @@ public class IAutils {
 		}
     }
     
-    public static void  downloadDem(Geometry selectedArea, String preferredFileName) {
+    public static String downloadDem(String shAbsFilepath, Geometry selectedArea, String preferredFileName, String targetDir) {
     	//Extending a bit the selected area for being sure.
     	System.out.println("Selected Polygon:\t" + selectedArea);
     	float d = (float) 0.005;
@@ -55,6 +68,9 @@ public class IAutils {
 		System.out.println("Extended Selected Polygon for dem:\t" + geomFact.toGeometry(new Envelope(demMinX, demMaxX, demMinY, demMaxY)));
 		
 		//code to submit the shell script that downloads the dem according to mins and maxes
+		//runShellScript(shAbsFilepath, preferredFileName, demMinX, demMinY, demMaxX, demMaxY, targetDir);
+		
+		return targetDir + File.separator + preferredFileName;
     }
     
 	/* This method submits shell script to the running machine.

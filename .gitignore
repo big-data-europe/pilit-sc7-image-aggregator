@@ -2,6 +2,7 @@
 /.settings/
 /.classpath
 /.project
+/bin
 
 ##Java's:
 # Compiled class file

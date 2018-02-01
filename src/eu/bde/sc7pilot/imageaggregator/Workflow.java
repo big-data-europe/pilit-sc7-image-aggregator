@@ -15,6 +15,7 @@ import com.bedatadriven.jackson.datatype.jts.JtsModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.vividsolutions.jts.geom.Geometry;
 
 import eu.bde.sc7pilot.imageaggregator.changeDetection.RandomTestDetection;
 import eu.bde.sc7pilot.imageaggregator.model.Change;
@@ -29,10 +30,15 @@ import rx.subjects.ReplaySubject;
 
 public class Workflow {
 	
+	private final static String IMG_DIR_FILEPATH = "/snap";
+	private final static String DOWNL_DEM_SH = "/downlDem.sh";
+	private final static String PRE_PROCESS_SH = "/runImgPreProcess.sh";
+	private final static String TERRAIN_CORRECT_SH = "/runTerrainCorrect.sh";
+	private final static String CHANGE_DET_SH = "/runChangeDet.sh";
+	private final static String DBSCAN_SH = "/runDBScan.sh";
+	
 	public String runWorkflow(ImageData imageData, ReplaySubject<String> subject) {
 		try {
-//			String outputDirectory = "/snap/";
-			String outputDirectory = "/media/indiana/data/imgs/";
 			SearchService searchService = new SearchService(imageData.getUsername(), imageData.getPassword());
 			DownloadService downloadService = new DownloadService(imageData.getUsername(), imageData.getPassword());
 			subject.onNext("Searching for images...");
@@ -55,56 +61,63 @@ public class Workflow {
 			String img2 = img2name + ".zip";
 			String img3 = img3name + ".jpeg";
 			String img4 = img4name + ".jpeg";
-		    String img1cod = img1name.substring(img1name.length()-4);//last 4 characters of the image name
-		    String img2cod = img2name.substring(img2name.length()-4);
-		    String cdCode = img1cod + "vs" + img2cod;
-
+		    String img1code = img1name.substring(img1name.length()-4);//last 4 characters of the image name
+		    String img2code = img2name.substring(img2name.length()-4);
+		    String cdCode = img1code + "vs" + img2code;
+		    String selectedPolygon = imageData.getArea().toString();
+		    Geometry selectedArea = imageData.getArea();
+		    
+		    // Downloading images
 		    subject.onNext("Downloading images...@@@" + img1name + "@@@" + img2name);
-			downloadService.downloadImages(images, outputDirectory);
+			downloadService.downloadImages(images, IMG_DIR_FILEPATH);
 			
-			File qlook1File = new File(outputDirectory + img3);
-			File qlook2File = new File(outputDirectory + img4);
+			File qlook1File = new File(IMG_DIR_FILEPATH + File.separator + img3);
+			File qlook2File = new File(IMG_DIR_FILEPATH + File.separator + img4);
 			
 			// Downloading dem
-			IAutils.downloadDem(imageData.getArea(), cdCode);
+			String demFileName = "dem" + cdCode + ".tif";
+			String demFilePath = IAutils.downloadDem(DOWNL_DEM_SH, selectedArea, demFileName, IMG_DIR_FILEPATH);
 			
-			//Preparing subseting
+			// Pre-processing SENTINEL-1 images.
 			subject.onNext("Performing subseting...");
-			String polygonSelected = imageData.getArea().toString(); //.replace("(", "\\(");
-			//polygonFixed = polygonFixed.replace(")", "\\)");
-			System.out.println("\n\nUser's selected polygon is: " + polygonSelected);
-			//Run Subset operator
-			System.out.println("\n\n\tRunning Subset operator one time for each Sentinel1 image.");
-			IAutils.runShellScript("/runsubset.sh", outputDirectory, img1, polygonSelected);
-			IAutils.runShellScript("/runsubset.sh", outputDirectory, img2, polygonSelected);
+			System.out.println("\n\nUser's selected polygon is: " + selectedPolygon);
+			System.out.println("\n\n\tRunning Subset and Calibration for each SENTINEL-1 image.");
+			String preprocImg1Name = "subsetCalib" + img1code;
+			String preprocImg2Name = "subsetCalib" + img2code;
+			IAutils.runShellScript(PRE_PROCESS_SH, IMG_DIR_FILEPATH, img1, preprocImg1Name, selectedPolygon);
+			IAutils.runShellScript(PRE_PROCESS_SH, IMG_DIR_FILEPATH, img2, preprocImg2Name, selectedPolygon);
 		    
-		    //Preparing change-detectioning
+			// Applying Terrain Correction to pre-processed images.
+		    System.out.println("\n\n\tPerforming Terrain Correction.");
+		    String img1TCinput = IMG_DIR_FILEPATH + File.separator + preprocImg1Name + ".dim";
+		    String img2TCinput = IMG_DIR_FILEPATH + File.separator + preprocImg2Name + ".dim";
+		    String tcResult1FilePath = IMG_DIR_FILEPATH + File.separator + "tc" + img1code + ".tif";
+		    String tcResult2FilePath = IMG_DIR_FILEPATH + File.separator + "tc" + img2code + ".tif";
+			IAutils.applyTerrainCorrection(TERRAIN_CORRECT_SH, img1TCinput, demFilePath, tcResult1FilePath, selectedArea);
+			IAutils.applyTerrainCorrection(TERRAIN_CORRECT_SH, img2TCinput, demFilePath, tcResult2FilePath, selectedArea);
+			
+		    // Applying ChangeDetection to TerrainCorrected images.
 		    System.out.println("\n\n\tPerforming Change-Detection.");
 		    subject.onNext("Performing Change-Detection...");
-			String sub1dim = outputDirectory + "subset_of_" + img1name + ".dim";
-			String sub1tif = outputDirectory + "subset_of_" + img1name + ".tif";
-			String sub2dim = outputDirectory + "subset_of_" + img2name + ".dim";
-			String sub2tif = outputDirectory + "subset_of_" + img2name + ".tif";
-			//Run change detection
-			IAutils.runShellScript("/runchangedet.sh", sub1dim, sub1tif, sub2dim, sub2tif);
+		    String cdImgFilePath = IMG_DIR_FILEPATH + File.separator + "cd" + cdCode + ".tif";
+			IAutils.runShellScript(CHANGE_DET_SH, tcResult1FilePath, tcResult2FilePath, cdImgFilePath);
 
-			//Preparing DBScaning
+			// Applying DBScan
 	        System.out.println("\n\n\tPerforming DBScan.");
 	        subject.onNext("Performing DBScan...");
-			String dbSCANoutput = img1cod + "vs" + img2cod + "coords.txt";
-			//Run DBScan	    
-			IAutils.runShellScript("/rundbscan.sh", outputDirectory, "SparkChangeDetResult.dim", dbSCANoutput);
-			String dbSCANoutputFilepath = outputDirectory + dbSCANoutput;
+			String dbSCANoutputFilepath = IMG_DIR_FILEPATH + File.separator + img1code + "vs" + img2code + "coords.txt";
+			//Run DBScan ...to be completed when   
+			IAutils.runShellScript(DBSCAN_SH, cdImgFilePath, dbSCANoutputFilepath);
 
 			// Processing the DBScan's output with polygons defining possible changes
 			RandomTestDetection changeDetection = new RandomTestDetection();
 			
 			//Storing to Strabon through Geotriples
-			System.out.println("\n\tStoring results...");
-			subject.onNext("Storing results...");
-			List<ChangeStore> changesToStore = changeDetection.detectChangesForStore(images, imageData, dbSCANoutputFilepath);
-			GeotriplesClient client = new GeotriplesClient("http://geotriples", "8080");
-			client.saveChanges(changesToStore);
+//			System.out.println("\n\tStoring results...");
+//			subject.onNext("Storing results...");
+//			List<ChangeStore> changesToStore = changeDetection.detectChangesForStore(images, imageData, dbSCANoutputFilepath);
+//			GeotriplesClient client = new GeotriplesClient("http://geotriples", "8080");
+//			client.saveChanges(changesToStore);
 
 			// Visualizing Polygons with changes to Sextant
 			System.out.println("\n\n\tVisualizing results...");

@@ -1,5 +1,6 @@
 package eu.bde.sc7pilot.imageaggregator;
 
+import java.io.File;
 import java.util.List;
 
 import eu.bde.sc7pilot.imageaggregator.model.Image;
@@ -23,7 +24,7 @@ public class DownloadService {
             try {
             	long startDownl = System.currentTimeMillis();
             	System.out.println("\nDownloading image:\t" + image.getName());
-                imageService.downloadQuickLook(image.getId(), outputDirectory + imageName + ".jpeg");
+                imageService.downloadQuickLook(image.getId(), outputDirectory + File.separator + imageName + ".jpeg");
                 long endDownl = System.currentTimeMillis();
                 long downlTime = endDownl - startDownl;
                 System.out.println(downlTime + " ms for Downloading and saving Image No.: " + i);
@@ -39,7 +40,7 @@ public class DownloadService {
             try {
             	long startDownl = System.currentTimeMillis();
             	System.out.println("\nDownloading image:\t" + image.getName());
-                imageService.downloadAndSaveById(image.getId(), outputDirectory + imageName + ".zip");
+                imageService.downloadAndSaveById(image.getId(), outputDirectory + File.separator + imageName + ".zip");
                 long endDownl = System.currentTimeMillis();
                 long downlTime = (endDownl - startDownl)/60000;
                 System.out.println(downlTime + " mins for Downloading and saving Image No.: " + i);
