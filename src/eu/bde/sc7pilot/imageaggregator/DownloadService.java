@@ -16,6 +16,7 @@ public class DownloadService {
 	}
 	
     public void downloadImages(List<Image> images, String outputDirectory) {
+    	// We will first download the quick-looks (images 2, 3) because they are faster and then the SENTINEL-1 ones (0 and 1 in List). 
         DataClient imageService = new DataClient(username, password);
         // Downloading Sentinel2 Quick-Look-Images for ground truth visualization
         for (int i = 2; i < 4; i++) {

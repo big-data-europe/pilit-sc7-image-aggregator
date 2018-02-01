@@ -15,6 +15,11 @@ import eu.bde.sc7pilot.imageaggregator.model.Image;
 
 public class IAutils {
 	
+	/*
+     * This method submits the shell script that runs the TerrainCorrection C++ code.
+     * it is needed to extract the boundaries of the selected area in order to give them
+     * to the sh and then as arguments to the C++ TC code.
+     */
 	public static void applyTerrainCorrection(String shAbsFilepath, String imgFilePath, String demFilePath, String resultFilePath, Geometry selectedArea) {
 		System.out.println("Selected Polygon:\t" + selectedArea);
     	Envelope areasEnvelope = selectedArea.getEnvelopeInternal();
@@ -24,7 +29,7 @@ public class IAutils {
 		double maxY = areasEnvelope.getMaxY();
 		
 		//code to submit the shell script that downloads the dem according to mins and maxes
-		//runShellScript(shAbsFilepath, imgFilePath, demFilePath, resultFilePath, minX, minY, maxX, maxY);
+		runShellScript(shAbsFilepath, imgFilePath, demFilePath, resultFilePath, Double.toString(minX), Double.toString(minY), Double.toString(maxX), Double.toString(maxY));
 	}
 	
     /*
@@ -53,9 +58,15 @@ public class IAutils {
 		}
     }
     
+	/* This method calculates an a bit larger polygon than the given
+	 * and runs the shell script which contains python's elevation module.
+	 * The method is made exclusively for this shell script,
+	 * that also contains a "mv" command to move the downloaded dem 
+	 * to the preferred (see last argument) directory.
+	 */
     public static String downloadDem(String shAbsFilepath, Geometry selectedArea, String preferredFileName, String targetDir) {
     	//Extending a bit the selected area for being sure.
-    	System.out.println("Selected Polygon:\t" + selectedArea);
+    	System.out.println("Selected Polygon:\t" + selectedArea.toString());
     	float d = (float) 0.005;
     	Envelope areasEnvelope = selectedArea.getEnvelopeInternal();
 		double demMinX = areasEnvelope.getMinX() - d;
@@ -68,7 +79,7 @@ public class IAutils {
 		System.out.println("Extended Selected Polygon for dem:\t" + geomFact.toGeometry(new Envelope(demMinX, demMaxX, demMinY, demMaxY)));
 		
 		//code to submit the shell script that downloads the dem according to mins and maxes
-		//runShellScript(shAbsFilepath, preferredFileName, demMinX, demMinY, demMaxX, demMaxY, targetDir);
+		runShellScript(shAbsFilepath, preferredFileName, Double.toString(demMinX), Double.toString(demMinY), Double.toString(demMaxX), Double.toString(demMaxY), targetDir);
 		
 		return targetDir + File.separator + preferredFileName;
     }

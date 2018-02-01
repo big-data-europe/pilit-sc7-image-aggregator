@@ -30,7 +30,7 @@ import rx.subjects.ReplaySubject;
 
 public class Workflow {
 	
-	private final static String IMG_DIR_FILEPATH = "/snap";
+	private final static String IMG_DIR_FILEPATH = "/allImages";
 	private final static String DOWNL_DEM_SH = "/downlDem.sh";
 	private final static String PRE_PROCESS_SH = "/runImgPreProcess.sh";
 	private final static String TERRAIN_CORRECT_SH = "/runTerrainCorrect.sh";
@@ -49,7 +49,6 @@ public class Workflow {
 				subject.onCompleted();
 				return "ok";
 			}
-			
 			IAutils.infoImages(images);
 			
 			//Name-processing of the to-be-downloaded images
@@ -64,7 +63,6 @@ public class Workflow {
 		    String img1code = img1name.substring(img1name.length()-4);//last 4 characters of the image name
 		    String img2code = img2name.substring(img2name.length()-4);
 		    String cdCode = img1code + "vs" + img2code;
-		    String selectedPolygon = imageData.getArea().toString();
 		    Geometry selectedArea = imageData.getArea();
 		    
 		    // Downloading images
@@ -80,15 +78,15 @@ public class Workflow {
 			
 			// Pre-processing SENTINEL-1 images.
 			subject.onNext("Performing subseting...");
-			System.out.println("\n\nUser's selected polygon is: " + selectedPolygon);
+			System.out.println("\n\nUser's selected polygon is: " + selectedArea.toString());
 			System.out.println("\n\n\tRunning Subset and Calibration for each SENTINEL-1 image.");
 			String preprocImg1Name = "subsetCalib" + img1code;
 			String preprocImg2Name = "subsetCalib" + img2code;
-			IAutils.runShellScript(PRE_PROCESS_SH, IMG_DIR_FILEPATH, img1, preprocImg1Name, selectedPolygon);
-			IAutils.runShellScript(PRE_PROCESS_SH, IMG_DIR_FILEPATH, img2, preprocImg2Name, selectedPolygon);
+			IAutils.runShellScript(PRE_PROCESS_SH, IMG_DIR_FILEPATH + File.separator + img1, preprocImg1Name, selectedArea.toString());
+			IAutils.runShellScript(PRE_PROCESS_SH, IMG_DIR_FILEPATH + File.separator + img2, preprocImg2Name, selectedArea.toString());
 		    
 			// Applying Terrain Correction to pre-processed images.
-		    System.out.println("\n\n\tPerforming Terrain Correction.");
+		    System.out.println("\n\n\tPerforming Terrain Correction...");
 		    String img1TCinput = IMG_DIR_FILEPATH + File.separator + preprocImg1Name + ".dim";
 		    String img2TCinput = IMG_DIR_FILEPATH + File.separator + preprocImg2Name + ".dim";
 		    String tcResult1FilePath = IMG_DIR_FILEPATH + File.separator + "tc" + img1code + ".tif";
@@ -146,30 +144,6 @@ public class Workflow {
 			subject.onNext("Session Completed!");
 			subject.onCompleted();
 			System.out.println("\n\tSession Completed!");
-//			if (img1Handler.getUnzipFile().exists()) {
-//				try {
-//					FileUtils.deleteDirectory(img1Handler.getUnzipFile());
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				System.out.println(img1Handler.getUnzipFile().getName() + " deleted succesfully!\n");
-//			}
-//			else {
-//				System.out.println("No file: " + img1Handler.getUnzipFile().getName() + " found.\n");
-//			}
-//			if (img2Handler.getUnzipFile().exists()) {
-//				try {
-//					FileUtils.deleteDirectory(img2Handler.getUnzipFile());
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				System.out.println(img1Handler.getUnzipFile().getName() + " deleted succesfully!\n");
-//			}
-//			else {
-//				System.out.println("No file: " + img1Handler.getUnzipFile().getName() + " found.\n");
-//			}
 			return "ok";
 		 } catch (NotAuthorizedException e) {
 		        subject.onError(e);

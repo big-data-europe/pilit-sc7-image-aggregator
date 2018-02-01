@@ -24,7 +24,7 @@ import eu.bde.sc7pilot.imageaggregator.utils.IdRetrieval;
 
 public class RandomTestDetection {
 
-	public List<Change> detectChanges(List<Image> images,ImageData imageData, String finalOutput) throws Exception {
+	public List<Change> detectChanges(List<Image> images, ImageData imageData, String finalOutput) throws Exception {
 		List<Change> changes = new ArrayList<Change>();
 		Image targetImage = images.get(0);
 		Image sourceImage = images.get(1);
@@ -89,35 +89,10 @@ public class RandomTestDetection {
 			System.out.println("Real changes returned");
 			return changes;
 		
-		}
-	
-		
-//*** Code returning 3 random polygons in the selected area given
-//		int nOfChanges=0;
-//		while(nOfChanges<3){
-//			Coordinate[] newPolygonCoords = new Coordinate[imageData.getArea().getCoordinates().length];
-//			Coordinate newLeftUp = new Coordinate((double)(env.getMinX()+random.nextDouble()*(env.getMaxX()-env.getMinX())),env.getMinY()+random.nextDouble()*(env.getMaxY()-env.getMinY()));
-//			Coordinate newRightDown = new Coordinate((double)(env.getMinX()+random.nextDouble()*(env.getMaxX()-env.getMinX())),env.getMinY()+random.nextDouble()*(env.getMaxY()-env.getMinY()));
-//			newPolygonCoords[0] = newLeftUp;
-//			newPolygonCoords[1] = new Coordinate(newRightDown.x,newLeftUp.y);
-//			newPolygonCoords[2] = newRightDown;
-//			newPolygonCoords[3] = new Coordinate(newLeftUp.x,newRightDown.y);
-//			newPolygonCoords[imageData.getArea().getCoordinates().length-1] = newPolygonCoords[0];
-//			GeometryFactory f = new GeometryFactory();
-//			System.out.println(f.createPolygon(newPolygonCoords));
-//			Geometry newg = f.createPolygon(newPolygonCoords);
-//			nOfChanges++;		
-//			Area area = new Area("test area" + nOfChanges, newg, IdRetrieval.getId(false));
-//			Change change = new Change(IdRetrieval.getId(true),sourceImage.getDate(),targetImage.getDate(),area);
-//			changes.add(change);
-//			}
-//		
-//		return changes;
-// ~~~ End of random-polygon-code
-		
+		}		
 	}
 	
-	public List<ChangeStore> detectChangesForStore(List<Image> images,ImageData imageData, String finalOutput) throws Exception {
+	public List<ChangeStore> detectChangesForStore(List<Image> images, ImageData imageData, String finalOutput) throws Exception {
 		List<ChangeStore> changesToStore = new ArrayList<ChangeStore>();
 		Image targetImage = images.get(0);
 		Image sourceImage = images.get(1);
@@ -173,8 +148,7 @@ public class RandomTestDetection {
 			}
 			
 			System.out.println("Real changes returned");
-			return changesToStore;
-			
+			return changesToStore;			
 		}
 	}
 
