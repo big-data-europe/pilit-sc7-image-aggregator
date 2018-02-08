@@ -33,9 +33,9 @@ public class Workflow {
 	private final static String IMG_DIR_FILEPATH = "/allImages";
 	private final static String DOWNL_DEM_SH = "/downlDem.sh";
 	private final static String PRE_PROCESS_SH = "/runImgPreProcess.sh";
-	private final static String TERRAIN_CORRECT_SH = "/runTerrainCorrect.sh";
-	private final static String CHANGE_DET_SH = "/runChangeDet.sh";
-	private final static String DBSCAN_SH = "/runDBScan.sh";
+	private final static String TERRAIN_CORRECT_SH = "/runTerrainCorrection.sh";
+	private final static String CHANGE_DET_SH = "/runChangeDetection.sh";
+	private final static String DBSCAN_SH = "/runPyDBScan.sh";
 	
 	public String runWorkflow(ImageData imageData, ReplaySubject<String> subject) {
 		try {
@@ -103,9 +103,9 @@ public class Workflow {
 			// Applying DBScan
 	        System.out.println("\n\n\tPerforming DBScan.");
 	        subject.onNext("Performing DBScan...");
-			String dbSCANoutputFilepath = IMG_DIR_FILEPATH + File.separator + img1code + "vs" + img2code + "coords.txt";
+			String dbSCANoutputName = "cl" + cdCode + ".txt";
 			//Run DBScan ...to be completed when   
-			IAutils.runShellScript(DBSCAN_SH, cdImgFilePath, dbSCANoutputFilepath);
+			IAutils.runShellScript(DBSCAN_SH, cdImgFilePath, dbSCANoutputName);
 
 			// Processing the DBScan's output with polygons defining possible changes
 			RandomTestDetection changeDetection = new RandomTestDetection();
@@ -119,7 +119,7 @@ public class Workflow {
 
 			// Visualizing Polygons with changes to Sextant
 			System.out.println("\n\n\tVisualizing results...");
-			List<Change> changes = changeDetection.detectChanges(images, imageData, dbSCANoutputFilepath);
+			List<Change> changes = changeDetection.detectChanges(images, imageData, IMG_DIR_FILEPATH + File.separator + dbSCANoutputName);
 			ObjectMapper objectMapper = new ObjectMapper();
 			objectMapper.registerModule(new JodaModule());
 			objectMapper.registerModule(new JtsModule());			
