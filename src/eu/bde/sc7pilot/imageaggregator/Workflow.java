@@ -1,6 +1,7 @@
 package eu.bde.sc7pilot.imageaggregator;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -8,6 +9,8 @@ import java.util.concurrent.Executors;
 
 import javax.ws.rs.NotAuthorizedException;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -16,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTReader;
 
 import eu.bde.sc7pilot.imageaggregator.changeDetection.RandomTestDetection;
 import eu.bde.sc7pilot.imageaggregator.model.Change;
@@ -36,41 +40,52 @@ public class Workflow {
 	private final static String TERRAIN_CORRECT_SH = "/runTerrainCorrection.sh";
 	private final static String CHANGE_DET_SH = "/runChangeDetection.sh";
 	private final static String DBSCAN_SH = "/runPyDBScan.sh";
+	private final static String HC_PROPERTIES = "/properties.txt";
 	
 	public String runWorkflow(ImageData imageData, ReplaySubject<String> subject) {
 		try {
-			SearchService searchService = new SearchService(imageData.getUsername(), imageData.getPassword());
-			DownloadService downloadService = new DownloadService(imageData.getUsername(), imageData.getPassword());
+//			SearchService searchService = new SearchService(imageData.getUsername(), imageData.getPassword());
+//			DownloadService downloadService = new DownloadService(imageData.getUsername(), imageData.getPassword());
 			subject.onNext("Searching for images...");
-			List<Image> images = searchService.searchImages(imageData);
+//			List<Image> images = searchService.searchImages(imageData);
+//			
+//			if(images.size() <= 1) {
+//				subject.onNext("No suitable images were found for the specified parameters.");
+//				subject.onCompleted();
+//				return "ok";
+//			}
+//			IAutils.infoImages(images);
 			
-			if(images.size() <= 1) {
-				subject.onNext("No suitable images were found for the specified parameters.");
-				subject.onCompleted();
-				return "ok";
+			// Read img-names and selected polygon
+			List<String> lines = new ArrayList<>();
+			File propertiesFilePath = new File(HC_PROPERTIES);
+			LineIterator lineIterator = FileUtils.lineIterator(propertiesFilePath);
+			while (lineIterator.hasNext()) {
+				String line = lineIterator.next().trim();
+				lines.add(line);
 			}
-			IAutils.infoImages(images);
 			
 			//Name-processing of the to-be-downloaded images
-		    String img1name = images.get(0).getName();
-		    String img2name = images.get(1).getName();
-		    String img3name = images.get(2).getName();
-		    String img4name = images.get(3).getName();
+		    String img1name = lines.get(0);
+		    String img2name = lines.get(1);
+//		    String img3name = images.get(2).getName();
+//		    String img4name = images.get(3).getName();
 			String img1 = img1name + ".zip";
 			String img2 = img2name + ".zip";
-			String img3 = img3name + ".jpeg";
-			String img4 = img4name + ".jpeg";
+//			String img3 = img3name + ".jpeg";
+//			String img4 = img4name + ".jpeg";
 		    String img1code = img1name.substring(img1name.length()-4);//last 4 characters of the image name
 		    String img2code = img2name.substring(img2name.length()-4);
 		    String cdCode = img1code + "vs" + img2code;
-		    Geometry selectedArea = imageData.getArea();
+		    WKTReader wkt = new WKTReader();
+		    Geometry selectedArea = wkt.read(lines.get(2));
 		    
 		    // Downloading images
 		    subject.onNext("Downloading images...@@@" + img1name + "@@@" + img2name);
-			downloadService.downloadImages(images, IMG_DIR_FILEPATH);
-			
-			File qlook1File = new File(IMG_DIR_FILEPATH + File.separator + img3);
-			File qlook2File = new File(IMG_DIR_FILEPATH + File.separator + img4);
+//			downloadService.downloadImages(images, IMG_DIR_FILEPATH);
+//			
+//			File qlook1File = new File(IMG_DIR_FILEPATH + File.separator + img3);
+//			File qlook2File = new File(IMG_DIR_FILEPATH + File.separator + img4);
 			
 			// Downloading dem
 			String demFileName = "dem" + cdCode + ".tif";
@@ -118,29 +133,29 @@ public class Workflow {
 //			client.saveChanges(changesToStore);
 
 			// Visualizing Polygons with changes to Sextant
-			System.out.println("\n\n\tVisualizing results...");
-			List<Change> changes = changeDetection.detectChanges(images, imageData, IMG_DIR_FILEPATH + File.separator + dbSCANoutputName);
-			ObjectMapper objectMapper = new ObjectMapper();
-			objectMapper.registerModule(new JodaModule());
-			objectMapper.registerModule(new JtsModule());			
-			objectMapper.setConfig(objectMapper.getSerializationConfig().withView(Views.Public.class));
-			objectMapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false));
-			String res = objectMapper.writerWithView(Views.Public.class).writeValueAsString(changes);
-			//Create .json and return json. qlook1FileDest qlook2FileDest
-			JSONObject responseJSON = new JSONObject();
-			responseJSON.put("changeset", res);
-			JSONArray imagesList = new JSONArray();
-			JSONObject img1JSON = new JSONObject();
-			JSONObject img2JSON = new JSONObject();
-			img1JSON.put("url", qlook1File.getAbsolutePath());
-			img1JSON.put("extent", images.get(2).getFootPrint());
-			img2JSON.put("url", qlook2File.getAbsolutePath());
-			img2JSON.put("extent", images.get(3).getFootPrint());
-			imagesList.add(img1JSON);
-			imagesList.add(img2JSON);
-			responseJSON.put("images", imagesList);
-//			System.out.println("\tJsonResponse to be send to Sextant:\n" + responseJSON.toString() + "\n\t...end of response.");
-			subject.onNext(responseJSON.toString());	
+//			System.out.println("\n\n\tVisualizing results...");
+//			List<Change> changes = changeDetection.detectChanges(images, imageData, IMG_DIR_FILEPATH + File.separator + dbSCANoutputName);
+//			ObjectMapper objectMapper = new ObjectMapper();
+//			objectMapper.registerModule(new JodaModule());
+//			objectMapper.registerModule(new JtsModule());			
+//			objectMapper.setConfig(objectMapper.getSerializationConfig().withView(Views.Public.class));
+//			objectMapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false));
+//			String res = objectMapper.writerWithView(Views.Public.class).writeValueAsString(changes);
+//			//Create .json and return json. qlook1FileDest qlook2FileDest
+//			JSONObject responseJSON = new JSONObject();
+//			responseJSON.put("changeset", res);
+//			JSONArray imagesList = new JSONArray();
+//			JSONObject img1JSON = new JSONObject();
+//			JSONObject img2JSON = new JSONObject();
+//			img1JSON.put("url", qlook1File.getAbsolutePath());
+//			img1JSON.put("extent", images.get(2).getFootPrint());
+//			img2JSON.put("url", qlook2File.getAbsolutePath());
+//			img2JSON.put("extent", images.get(3).getFootPrint());
+//			imagesList.add(img1JSON);
+//			imagesList.add(img2JSON);
+//			responseJSON.put("images", imagesList);
+////			System.out.println("\tJsonResponse to be send to Sextant:\n" + responseJSON.toString() + "\n\t...end of response.");
+//			subject.onNext(responseJSON.toString());	
 			subject.onNext("Session Completed!");
 			subject.onCompleted();
 			System.out.println("\n\tSession Completed!");
