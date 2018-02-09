@@ -10,10 +10,29 @@ import org.apache.commons.io.IOUtils;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 
 import eu.bde.sc7pilot.imageaggregator.model.Image;
 
 public class IAutils {
+	
+	public static void main(String[] args) throws ParseException {
+		WKTReader wkt = new WKTReader();
+		Geometry mygeom = wkt.read("POLYGON ((23.6949348449707 37.927375371469154, 23.66000175476074 37.927375371469154, 23.66000175476074 37.94484052385967, 23.6949348449707 37.94484052385967, 23.6949348449707 37.927375371469154))");
+		Envelope myenv = mygeom.getEnvelopeInternal();
+		System.out.println(mygeom.getArea());
+		double minX = myenv.getMinX();
+		double maxX = myenv.getMaxX();
+		double minY = myenv.getMinY();
+		double maxY = myenv.getMaxY();
+		System.out.println("MinX = " + minX);
+		System.out.println("MaxX = " + maxX);
+		System.out.println("MinY = " + minY);
+		System.out.println("MaxY = " + maxY);
+		double areaKM2 = ((maxY - minY) * 111) * ((maxX - minX) * 111);
+		System.out.println(areaKM2 + "km2");
+	}
 	
 	/*
      * This method submits the shell script that runs the TerrainCorrection C++ code.
