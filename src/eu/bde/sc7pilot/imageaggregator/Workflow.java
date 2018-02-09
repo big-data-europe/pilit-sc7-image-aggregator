@@ -66,6 +66,10 @@ public class Workflow {
 			}
 			
 			//Name-processing of the to-be-downloaded images
+			for(int i = 0; i < lines.size(); i++) {
+				System.out.println(lines.get(i));
+			}
+			System.out.println(lines.get(0));
 		    String img1name = lines.get(0);
 		    String img2name = lines.get(1);
 //		    String img3name = images.get(2).getName();
