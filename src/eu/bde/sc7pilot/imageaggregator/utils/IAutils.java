@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -17,22 +18,25 @@ import eu.bde.sc7pilot.imageaggregator.model.Image;
 
 public class IAutils {
 	
-	public static void main(String[] args) throws ParseException {
-		WKTReader wkt = new WKTReader();
-		Geometry mygeom = wkt.read("POLYGON ((23.6949348449707 37.927375371469154, 23.66000175476074 37.927375371469154, 23.66000175476074 37.94484052385967, 23.6949348449707 37.94484052385967, 23.6949348449707 37.927375371469154))");
-		Envelope myenv = mygeom.getEnvelopeInternal();
-		System.out.println(mygeom.getArea());
-		double minX = myenv.getMinX();
-		double maxX = myenv.getMaxX();
-		double minY = myenv.getMinY();
-		double maxY = myenv.getMaxY();
-		System.out.println("MinX = " + minX);
-		System.out.println("MaxX = " + maxX);
-		System.out.println("MinY = " + minY);
-		System.out.println("MaxY = " + maxY);
-		double areaKM2 = ((maxY - minY) * 111) * ((maxX - minX) * 111);
-		System.out.println(areaKM2 + "km2");
-	}
+//	public static void main(String[] args) throws ParseException {
+//		WKTReader wkt = new WKTReader();
+//		Geometry mygeom = wkt.read("POLYGON ((22.38713264465332 39.61145432244845, 22.38713264465332 39.656271025411606, 22.45081901550293 39.656271025411606, 22.45081901550293 39.61145432244845, 22.38713264465332 39.61145432244845))");
+//		Envelope myenv = mygeom.getEnvelopeInternal();
+//		System.out.println(mygeom.getArea());
+//		double minX = myenv.getMinX();
+//		double maxX = myenv.getMaxX();
+//		double minY = myenv.getMinY();
+//		double maxY = myenv.getMaxY();
+//		System.out.println("MinX = " + minX);
+//		System.out.println("MaxX = " + maxX);
+//		System.out.println("MinY = " + minY);
+//		System.out.println("MaxY = " + maxY);
+//		double areaKM2 = ((maxY - minY) * 111) * ((maxX - minX) * 85.4);
+//		System.out.println(areaKM2 + "km2");
+//		Coordinate[] allCoords = mygeom.getCoordinates();
+//		for (int i = 0; i < allCoords.length; i++)
+//			System.out.println(allCoords[i]);
+//	}
 	
 	/*
      * This method submits the shell script that runs the TerrainCorrection C++ code.
@@ -122,5 +126,26 @@ public class IAutils {
 		}
 		return writer.toString();
 	}
+	
+//	public static Double coordToSIDistance()
+	
+	// Convert this to Java... and maybe it will be 
+//	function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
+//		  var R = 6371; // Radius of the earth in km
+//		  var dLat = deg2rad(lat2-lat1);  // deg2rad below
+//		  var dLon = deg2rad(lon2-lon1); 
+//		  var a = 
+//		    Math.sin(dLat/2) * Math.sin(dLat/2) +
+//		    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+//		    Math.sin(dLon/2) * Math.sin(dLon/2)
+//		    ; 
+//		  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+//		  var d = R * c; // Distance in km
+//		  return d;
+//		}
+//
+//		function deg2rad(deg) {
+//		  return deg * (Math.PI/180)
+//		}
 
 }
